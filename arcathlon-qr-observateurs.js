@@ -38,7 +38,6 @@
         #qr-zone{display:grid;place-items:center}
         #qr-zone .white{background:#fff;border:1px solid #d1d5db;border-radius:12px;padding:12px}
         pre{background:#0b1222;border:1px solid #22314b;border-radius:8px;color:#cbd5e1;padding:8px;font:12px ui-monospace,Menlo,Consolas,monospace;max-height:220px;overflow:auto}
-        /* Fullscreen QR */
         #qr-full{position:fixed;inset:0;background:#fff;display:none;place-items:center;z-index:100000}
         #qr-full .inner{display:grid;place-items:center;gap:16px}
         #qr-full .white{background:#fff;padding:20px}
@@ -99,46 +98,30 @@
     $('#qr-full .close').onclick = ()=>{ $('#qr-full').style.display='none'; };
   }
 
-  function getAllTables(){
-    return $$('table');
-  }
-
+  function getAllTables(){ return document.querySelectorAll('table'); }
   function headerTexts(table){
-    let headers = $$('thead th', table).map(th=>th.textContent.trim());
-    if(headers.length===0){
-      const firstRow = $('tr', table);
+    let headers = Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+    if(!headers.length){
+      const firstRow = table.querySelector('tr');
       if(firstRow){
-        const ths = $$('th', firstRow);
+        const ths = Array.from(firstRow.querySelectorAll('th'));
         if(ths.length) headers = ths.map(th=>th.textContent.trim());
       }
     }
-    if(headers.length===0){
-      headers = $$('th', table).map(th=>th.textContent.trim());
-    }
+    if(!headers.length){ headers = Array.from(table.querySelectorAll('th')).map(th=>th.textContent.trim()); }
     return headers;
   }
-
   function scoreTableCandidate(table){
     const h = headerTexts(table).map(x=>x.toLowerCase());
     const hasPhase = h.some(x=>/phase/.test(x));
     const hasTemps = h.some(x=>/temps/.test(x));
     const hasVit   = h.some(x=>/vitesse/.test(x));
     const hasScore = h.some(x=>/score/.test(x));
-    let score = 0;
-    if(hasPhase) score++;
-    if(hasTemps) score++;
-    if(hasVit) score++;
-    if(hasScore) score++;
-    return score;
+    let score = 0; if(hasPhase) score++; if(hasTemps) score++; if(hasVit) score++; if(hasScore) score++; return score;
   }
-
   function findRecapTable(){
-    const tables = getAllTables();
     let best=null, bestScore=-1;
-    tables.forEach(t=>{
-      const sc = scoreTableCandidate(t);
-      if(sc>bestScore){ best=t; bestScore=sc; }
-    });
+    getAllTables().forEach(t=>{ const sc = scoreTableCandidate(t); if(sc>bestScore){ best=t; bestScore=sc; } });
     return best;
   }
 
@@ -146,16 +129,12 @@
     const table = findRecapTable();
     if(!table) return { headers:[], rows:[] };
     let headers = headerTexts(table);
-    const bodyRows = $$('tbody tr', table);
+    const bodyRows = Array.from(table.querySelectorAll('tbody tr'));
     const rows = [];
     bodyRows.forEach(tr=>{
       const cells = Array.from(tr.children).map(td=>td.textContent.trim());
-      if(headers.length===0){
-        headers = cells.map((_,i)=>'col'+(i+1));
-      }
-      const obj = {};
-      headers.forEach((h,i)=> obj[h] = (cells[i]??''));
-      rows.push(obj);
+      if(headers.length===0){ headers = cells.map((_,i)=>'col'+(i+1)); }
+      const obj = {}; headers.forEach((h,i)=> obj[h] = (cells[i]??'')); rows.push(obj);
     });
     return { headers, rows };
   }
@@ -169,46 +148,33 @@
     const phaseKey = find('phase') || keys[0];
     return { timeKey, speedKey, scoreKey, phaseKey };
   }
-
-  function toFloat(x){
-    const s = String(x||'').replace(',', '.');
-    const v = parseFloat(s);
-    return Number.isFinite(v) ? v : 0;
+  function toFloat(x){ const s=String(x||'').replace(',', '.'); const v=parseFloat(s); return Number.isFinite(v)?v:0; }
+  function computeSummary(rows){
+    if(!rows.length) return { totalSec:0, avgSpeed:0, totalScore:0, keys:{} };
+    const keys = chooseKeys(rows[0]); let totalSec=0, totalScore=0, sumSpeed=0, nSpeed=0;
+    rows.forEach(r=>{ const t=toFloat(r[keys.timeKey]); const v=toFloat(r[keys.speedKey]); const s=toFloat(r[keys.scoreKey]); totalSec+=t; if(Number.isFinite(v)&&v>0){sumSpeed+=v;nSpeed++;} totalScore+=s; });
+    const avgSpeed = nSpeed? (sumSpeed/nSpeed) : 0; return { totalSec, avgSpeed, totalScore, keys };
   }
 
-  function computeSummary(rows){
-    if(rows.length===0) return { totalSec:0, avgSpeed:0, totalScore:0, keys:{} };
-    const keys = chooseKeys(rows[0]);
-    let totalSec=0, totalScore=0, sumSpeed=0, nSpeed=0;
-    rows.forEach(r=>{
-      const t = toFloat(r[keys.timeKey]);
-      const v = toFloat(r[keys.speedKey]);
-      const s = toFloat(r[keys.scoreKey]);
-      totalSec += t;
-      if(Number.isFinite(v) && v>0){ sumSpeed += v; nSpeed++; }
-      totalScore += s;
-    });
-    const avgSpeed = nSpeed? (sumSpeed/nSpeed) : 0;
-    return { totalSec, avgSpeed, totalScore, keys };
+  function renderQR(text){
+    const slot = document.getElementById('qr-slot'); slot.innerHTML='';
+    new QRCode(slot,{text,width:360,height:360,colorDark:"#000",colorLight:"#fff",correctLevel:QRCode.CorrectLevel.H});
   }
 
   function buildPayload(){
     const { headers, rows } = readRecapTable();
-    if(rows.length===0){
-      alert("Je n’ai pas trouvé le tableau récapitulatif (ou il est vide).");
-      return null;
-    }
+    if(!rows.length){ alert("Je n’ai pas trouvé le tableau récapitulatif (ou il est vide)."); return null; }
     const { totalSec, avgSpeed, totalScore, keys } = computeSummary(rows);
     const payload = {
       Mode: "Arcathlon",
-      nom: $('#nom')?.value?.trim() || "",
-      prenom: $('#prenom')?.value?.trim() || "",
-      classe: $('#classe')?.value?.trim() || "",
-      sexe: ((['M','F'].includes($('#sexe')?.value)) ? $('#sexe').value : 'F'),
-      Observateur: $('#obs')?.value?.trim() || undefined,
-      Meteo: ($('#meteo')?.value && $('#meteo').value !== '—') ? $('#meteo').value : undefined,
-      Vent: ($('#vent')?.value && $('#vent').value !== '—') ? $('#vent').value : undefined,
-      Remarques: $('#notes')?.value?.trim() || undefined,
+      nom: document.getElementById('nom')?.value?.trim() || "",
+      prenom: document.getElementById('prenom')?.value?.trim() || "",
+      classe: document.getElementById('classe')?.value?.trim() || "",
+      sexe: ((['M','F'].includes(document.getElementById('sexe')?.value)) ? document.getElementById('sexe').value : 'F'),
+      Observateur: document.getElementById('obs')?.value?.trim() || undefined,
+      Meteo: (document.getElementById('meteo')?.value && document.getElementById('meteo').value !== '—') ? document.getElementById('meteo').value : undefined,
+      Vent: (document.getElementById('vent')?.value && document.getElementById('vent').value !== '—') ? document.getElementById('vent').value : undefined,
+      Remarques: document.getElementById('notes')?.value?.trim() || undefined,
       Total_s: Number(totalSec.toFixed(2)),
       Vitesse_moy_kmh: Number(avgSpeed.toFixed(2)),
       Score_total: Number(totalScore.toFixed(2)),
@@ -222,67 +188,93 @@
     return payload;
   }
 
-  function renderQRInto(targetId, payloadText, size=360){
-    const slot = document.getElementById(targetId);
-    slot.innerHTML='';
-    new QRCode(slot, { text: payloadText, width: size, height: size, colorDark:"#000000", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.H });
-  }
-
   function wire(){
-    const scanBtn = $('#arc-qr-scan');
-    const copyBtn = $('#arc-qr-copy');
-    const dlBtn   = $('#arc-qr-dl');
-    const fsBtn   = $('#arc-qr-full');
-    const fsWrap  = $('#qr-full');
-    const fsDl    = $('#qr-full-dl');
-
-    if(!scanBtn) return;
-
-    scanBtn.onclick = async ()=>{
-      try{
-        await loadQRCodeLibIfNeeded();
-      }catch(e){
-        alert("Librairie QRCode non chargée."); return;
-      }
-      const data = buildPayload();
-      if(!data) return;
+    document.getElementById('arc-qr-fab').onclick = ()=>{ document.getElementById('arc-qr-panel').style.display='grid'; };
+    document.getElementById('arc-qr-close').onclick = ()=>{ document.getElementById('arc-qr-panel').style.display='none'; };
+    document.getElementById('arc-qr-scan').onclick = async ()=>{
+      try{ await loadQRCodeLibIfNeeded(); }catch(e){ alert("Librairie QRCode non chargée."); return; }
+      const data = buildPayload(); if(!data) return;
       const txt = JSON.stringify([data]);
-      $('#arc-qr-json').textContent = JSON.stringify([data], null, 2);
-      renderQRInto('qr-slot', txt, 360);
-      copyBtn.disabled = false;
-      dlBtn.disabled   = false;
-      fsBtn.disabled   = false;
-
-      fsBtn.onclick = ()=>{
-        renderQRInto('qr-full-slot', txt, 520);
-        fsWrap.style.display='grid';
+      document.getElementById('arc-qr-json').textContent = JSON.stringify([data], null, 2);
+      renderQR(txt);
+      document.getElementById('arc-qr-copy').disabled=false;
+      document.getElementById('arc-qr-dl').disabled=false;
+      document.getElementById('arc-qr-full').disabled=false;
+      document.getElementById('arc-qr-full').onclick = ()=>{
+        const full = document.getElementById('qr-full');
+        const slot = document.getElementById('qr-full-slot'); slot.innerHTML='';
+        new QRCode(slot,{text:txt,width:520,height:520,colorDark:"#000",colorLight:"#fff",correctLevel:QRCode.CorrectLevel.H});
+        full.style.display='grid';
       };
-      fsDl.onclick = ()=>{
-        const cnv = $('#qr-full-slot canvas') || $('#qr-full-slot img');
-        if(!cnv) return;
-        const url = cnv.tagName==='IMG' ? cnv.src : cnv.toDataURL('image/png');
+      document.getElementById('qr-full-dl').onclick = ()=>{
+        const img = document.querySelector('#qr-full-slot img') || document.querySelector('#qr-full-slot canvas');
+        const url = img.tagName==='IMG' ? img.src : img.toDataURL('image/png');
         const a=document.createElement('a');
-        const base=`QR_Arcathlon_${($('#nom')?.value||'')}_${($('#prenom')?.value||'')}`.replace(/\s+/g,'_');
+        const base=`QR_Arcathlon_${(document.getElementById('nom')?.value||'')}_${(document.getElementById('prenom')?.value||'')}`.replace(/\s+/g,'_');
         a.href=url; a.download=base+'.png'; a.click();
       };
     };
-
-    copyBtn.onclick = ()=>{
-      const txt = $('#arc-qr-json').textContent || '';
+    document.getElementById('arc-qr-copy').onclick = ()=>{
+      const txt = document.getElementById('arc-qr-json').textContent;
       navigator.clipboard.writeText(txt).then(()=> alert('JSON copié.'));
     };
-
-    dlBtn.onclick = ()=>{
-      const cnv = $('#qr-slot canvas') || $('#qr-slot img');
-      if(!cnv){ alert('Génère d’abord le QR.'); return; }
-      const url = cnv.tagName==='IMG' ? cnv.src : cnv.toDataURL('image/png');
+    document.getElementById('arc-qr-dl').onclick = ()=>{
+      const img = document.querySelector('#qr-slot img') || document.querySelector('#qr-slot canvas');
+      if(!img){ alert('Génère d’abord le QR.'); return; }
+      const url = img.tagName==='IMG' ? img.src : img.toDataURL('image/png');
       const a=document.createElement('a');
-      const base=`QR_Arcathlon_${($('#nom')?.value||'')}_${($('#prenom')?.value||'')}`.replace(/\s+/g,'_');
+      const base=`QR_Arcathlon_${(document.getElementById('nom')?.value||'')}_${(document.getElementById('prenom')?.value||'')}`.replace(/\s+/g,'_');
       a.href=url; a.download=base+'.png'; a.click();
     };
   }
 
+  function ensureUIOnce(){
+    if(document.getElementById('arc-qr-fab')) return;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `
+      <button id="arc-qr-fab" title="QR & Observateurs">QR & Observateurs</button>
+      <div id="arc-qr-panel" style="display:none"></div>
+    `;
+  }
+
   document.addEventListener('DOMContentLoaded', ()=>{
+    // Build full UI now
+    (function inject(){ 
+      const tmp=document.createElement('div'); 
+      tmp.innerHTML=`
+        <button id="arc-qr-fab" title="QR & Observateurs" style="position:fixed;right:16px;bottom:16px;z-index:99999;background:#4f46e5;color:#fff;border:0;border-radius:999px;padding:12px 16px;font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer">QR & Observateurs</button>
+        <div id="arc-qr-panel" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.55);z-index:99998">
+          <div id="arc-qr-card"></div>
+        </div>`;
+      document.body.appendChild(tmp);
+    })();
+    // Now fill panel content
+    (function fill(){
+      const panel = document.getElementById('arc-qr-card');
+      panel.innerHTML = document.querySelector('#arc-qr-card') ? document.querySelector('#arc-qr-card').innerHTML : `
+        <div style="padding:12px;color:#e5e7eb">Si vous voyez ce message, re-collez le script fourni (version compacte installée).</div>`;
+    })();
+
+    // Replace with full feature UI (from ensureUI) 
+    document.getElementById('arc-qr-panel').outerHTML = (function(){
+      const d=document.createElement('div');
+      d.innerHTML = `
+        <div id="arc-qr-panel" style="display:none"></div>
+      `; return d.firstElementChild.outerHTML; })();
+
+    // Actually add full UI now
+    // (we rebuild the full UI with styles to avoid CSS duplication in the compact bootstrap)
+    (function rebuildUI(){ 
+      const container=document.createElement('div');
+      container.innerHTML = `
+        <style>
+          #arc-qr-panel{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.55);z-index:99998}
+        </style>
+      `;
+      document.body.appendChild(container);
+    })();
+
+    // Simpler: call ensureUI() that creates the whole panel & styles
     ensureUI();
     wire();
   });
