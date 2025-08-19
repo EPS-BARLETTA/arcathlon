@@ -3,13 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale v2</title>
+  <title>Arcathlon – Spirale v3</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale v2</h1>
+  <h1>🏹 Arcathlon Spirale v3</h1>
   <nav>
+    <label class="switch">
+      <input type="checkbox" id="cine-auto">
+      <span>🎬 Ciné‑mode auto</span>
+    </label>
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
     <button id="btn-resume" class="btn">Reprendre</button>
     <button id="btn-export" class="btn">Exporter sauvegarde</button>
@@ -55,8 +59,8 @@
 
   <section class="card">
     <h3>Principe du score</h3>
-    <p>Saisie épurée : chaque flèche peut valoir <b>0</b>, <b>6</b>, <b>7</b>, <b>8</b>, <b>9</b> ou <b>10</b>.<br>
-    On garde la meilleure flèche de chaque tireur. Le binôme avance de la <b>somme</b> de ses 2 meilleures.</p>
+    <p>Chaque flèche vaut : <b>0</b>, <b>6</b>, <b>7</b>, <b>8</b>, <b>9</b> ou <b>10</b>. On garde la meilleure de chaque tireur.<br>
+    Le binôme avance de la <b>somme</b> des deux meilleures.</p>
   </section>
 </main>
 
@@ -89,8 +93,9 @@
       </div>
     </aside>
 
-    <section class="board-wrap">
-      <svg id="board" viewBox="0 0 900 900" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+    <section class="board-wrap" id="board-wrap">
+      <svg id="board" viewBox="0 0 1000 1000" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+      <div id="fx-layer"></div>
       <div class="legend">
         <span class="chip bonus">Bonus</span>
         <span class="chip malus">Malus</span>
@@ -99,6 +104,10 @@
         <span class="chip teleport">Téléport</span>
         <span class="chip goal">Objectif</span>
         <span class="chip steal">Vole une flèche</span>
+      </div>
+      <div id="hud" class="hud" hidden>
+        <div id="hud-text"></div>
+        <button id="exit-cine" class="btn ghost small">Quitter</button>
       </div>
     </section>
   </section>
@@ -114,10 +123,10 @@
 <dialog id="help">
   <h2>📘 Aide (EPS)</h2>
   <ul>
-    <li>Chaque tireur dispose de 3 flèches (ou 2 si pénalité). Choix possibles : 0, 6, 7, 8, 9, 10.</li>
-    <li>Somme des deux meilleures → avance du binôme.</li>
-    <li>Cases visibles (stratégie) : Objectifs “avance +4”, “→ +10”, “Rejouer”, “Vole 1 flèche”…</li>
-    <li>Cases mystère : se révèlent lorsqu’on les atteint.</li>
+    <li>Flèches autorisées : 0, 6, 7, 8, 9, 10 (sélection par puces).</li>
+    <li>Somme des 2 meilleures → avance du binôme.</li>
+    <li>Cases “Objectif” (ex. +4 / → +10 / Rejouer / Vole 1 flèche) + cases mystères révélées à l’arrivée.</li>
+    <li>🎬 <b>Ciné‑mode</b> : passage automatique en plein écran pendant les déplacements (activable en haut).</li>
   </ul>
   <div class="row end gap">
     <button id="help-close" class="btn primary">Fermer</button>
