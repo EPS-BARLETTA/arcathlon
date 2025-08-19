@@ -1,14 +1,85 @@
-:root{--bg:#0b0d12;--panel:#141a27;--muted:#9aa4b6;--text:#f2f5f9;--primary:#16db65;--accent:#4cc9f0;--warn:#ffd166;--bonus:#2ec4b6;--malus:#ff7b7b}
-*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#0a0f1c,#0b0d12); color:var(--text)}
-.app-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#0b0f18}
-.btn{background:#22304a;color:#fff;border:none;border-radius:12px;padding:10px 14px;cursor:pointer} .btn.primary{background:linear-gradient(135deg,#3ddc97,#16db65)} .btn.ghost{background:transparent;border:1px solid #334}
-.screen{display:none;max-width:1200px;margin:0 auto;padding:16px} .screen.active{display:block}
-.card{background:#141a27;border-radius:16px;padding:16px;margin:16px 0}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px} .col-span-2{grid-column:span 2} .row{display:flex;align-items:center;gap:8px} .row.end{justify-content:flex-end} .wrap{flex-wrap:wrap}
-.team-card{background:#101726;border-left:6px solid var(--team);border-radius:12px;padding:12px}
-.layout{display:grid;grid-template-columns:360px 1fr;gap:12px} .panel{background:#141a27;border-radius:16px;padding:12px}
-.team-score{background:#0f1524;border-radius:12px;padding:10px;margin-bottom:12px} .archer{background:#0c1220;border-radius:10px;padding:8px;margin:8px 0}
-.board-wrap{background:#141a27;border-radius:16px;padding:8px} .board-svg{width:100%;height:calc(100vh - 220px);background:#0a0f1a;border-radius:12px}
-.square text{font-size:9px;fill:#c9d2e3} .square rect{fill:#151c2a;stroke:#2a3652;stroke-width:1.2;rx:10;ry:10}
-.square.bonus rect{outline:2px solid var(--bonus)} .square.malus rect{outline:2px solid var(--malus)} .square.skip rect{outline:2px solid var(--warn)} .square.mystery rect{outline:2px solid var(--accent)} .square.teleport rect{outline:2px solid #a78bfa} .square.finish rect{fill:#7b2cbf;stroke-width:0}
-.token circle{stroke:#fff8;stroke-width:2}
+/* Arcathlon Spirale v2 – visuel amélioré */
+:root{
+  --bg:#0b0d12; --panel:#121827; --muted:#9aa4b6; --text:#f2f6fb;
+  --primary:#16db65; --accent:#5ac8fa; --danger:#ef476f; --warn:#ffd166; --goal:#a78bfa; --steal:#f59e0b;
+  --bonus:#2ec4b6; --malus:#ff7b7b;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;
+  color:var(--text); background:radial-gradient(60% 100% at 50% 0%, #0a1022 0%, #0b0d12 60%)}
+.app-header{position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:12px 16px; background:#0b0f18aa; backdrop-filter: blur(6px); box-shadow:var(--shadow)}
+.app-header h1{margin:0; font-size:20px}
+nav{display:flex; gap:8px; flex-wrap:wrap}
+.btn{background:#1b2742; color:var(--text); border:none; border-radius:14px; padding:10px 14px; cursor:pointer; box-shadow:var(--shadow); font-weight:700}
+.btn.primary{background:linear-gradient(135deg,#3ddc97,#16db65)}
+.btn.ghost{background:transparent; border:1px solid #334; box-shadow:none}
+.btn.large{padding:12px 18px; font-size:16px}
+.file-btn{position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px; background:#0f1a32; padding:10px 14px; border-radius:12px; cursor:pointer}
+.file-btn input{position:absolute; inset:0; opacity:0; cursor:pointer}
+.screen{display:none; padding:16px; max-width:1300px; margin:0 auto}
+.screen.active{display:block}
+.card{background:linear-gradient(180deg,#141a2b,#0e1424); border-radius:18px; padding:16px; box-shadow:var(--shadow); margin:16px 0; border:1px solid #22304a}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.col-span-2{grid-column:span 2}
+.team-card{background:#0e1528; border-radius:14px; padding:12px; border-left:6px solid var(--team); box-shadow:var(--shadow)}
+
+.layout{display:grid; grid-template-columns:420px 1fr; gap:12px}
+.panel{background:linear-gradient(180deg,#131a2b,#0e1323); border-radius:18px; padding:12px; box-shadow:var(--shadow); border:1px solid #22304a}
+.round-box{font-weight:800; margin-bottom:8px}
+.team-score{background:#0b1223; border-radius:12px; padding:10px; margin-bottom:12px; box-shadow:var(--shadow); border:1px solid #1d2744}
+.debuff{background:#3b2f09; color:#ffd166; border:1px dashed #ffd166; padding:6px 8px; border-radius:8px; font-size:13px; margin:6px 0}
+.archer{background:#0a1121; padding:10px; border-radius:12px; margin:10px 0; border:1px solid #1b2542}
+.archer .who{font-weight:800; margin-bottom:8px}
+.row{display:flex; align-items:center}
+.row.gap{gap:10px}
+.row.end{justify-content:flex-end}
+.wrap{flex-wrap:wrap}
+.total{color:var(--muted); font-size:14px; margin-top:8px}
+
+.board-wrap{background:linear-gradient(180deg,#121a2b,#0c1224); border-radius:18px; box-shadow:var(--shadow); padding:8px; position:relative; border:1px solid #22304a}
+.board-svg{width:100%; height:calc(100vh - 220px); border-radius:14px; background:radial-gradient(60% 100% at 50% 0%, #0a0f1c 0%, #0a0f1c 60%)}
+.legend{position:absolute; bottom:10px; right:10px; display:flex; gap:8px; flex-wrap:wrap}
+.chip{padding:6px 10px; border-radius:999px; font-size:12px; background:#1a2232; border:1px solid #2a3652}
+.chip.bonus{outline:2px solid var(--bonus)}
+.chip.malus{outline:2px solid var(--malus)}
+.chip.skip{outline:2px solid var(--warn)}
+.chip.mystery{outline:2px solid var(--accent)}
+.chip.teleport{outline:2px solid #9cc2ff}
+.chip.goal{outline:2px solid var(--goal)}
+.chip.steal{outline:2px solid var(--steal)}
+
+.square{transition:transform .12s ease}
+.square text{font-size:9.5px; fill:#c9d2e3}
+.square rect{fill:#151c2a; stroke:#2a3652; stroke-width:1.2; rx:10; ry:10}
+.square.bonus rect{outline:2px solid var(--bonus)}
+.square.malus rect{outline:2px solid var(--malus)}
+.square.skip rect{outline:2px solid var(--warn)}
+.square.mystery rect{outline:2px solid var(--accent)}
+.square.teleport rect{outline:2px solid #9cc2ff}
+.square.goal rect{outline:2px solid var(--goal)}
+.square.steal rect{outline:2px solid var(--steal)}
+.square.finish rect{fill:url(#finishGrad); stroke-width:0}
+.square.highlight rect{filter: drop-shadow(0 0 6px rgba(90,200,250,.7));}
+
+.token circle{stroke:#fff8; stroke-width:2}
+.token .inner{fill:none; stroke:#fff4; stroke-width:2}
+.token.duo .c2{transform: translateX(14px)}
+.token.duo .c1{transform: translateX(-14px)}
+
+.value-group{display:flex; gap:6px; flex-wrap:wrap}
+.value-btn{padding:6px 10px; border-radius:10px; border:1px solid #2a3652; background:#0f1628; color:#e6edf7; cursor:pointer; font-weight:700}
+.value-btn[aria-pressed="true"]{background:linear-gradient(135deg,#5ac8fa,#2dd4bf); color:#07101f; border-color:transparent}
+.arrow-row{display:flex; gap:8px; align-items:center; margin:6px 0}
+.badge{padding:2px 8px; border-radius:999px; border:1px solid #2a3652; color:#9fb0c8; font-size:12px}
+.best{color:#9fb0c8; font-size:13px; margin-left:auto; font-weight:700}
+
+dialog{border:none; border-radius:18px; padding:16px; background:#0e1426; color:var(--text); box-shadow:var(--shadow); border:1px solid #22304a; max-width:600px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+#modal-content{margin-bottom:12px}
+.loading{display:flex; align-items:center; gap:10px}
+.dot{width:8px; height:8px; background:#5ac8fa; border-radius:50%; animation:bob 1s infinite ease-in-out}
+.dot:nth-child(2){animation-delay:.15s} .dot:nth-child(3){animation-delay:.3s}
+@keyframes bob{0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)}}

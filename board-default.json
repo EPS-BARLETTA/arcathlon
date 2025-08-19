@@ -25,9 +25,8 @@
   },
   {
     "index": 4,
-    "label": "4",
-    "type": "",
-    "value": 0
+    "type": "goal",
+    "label": "🎯 Objectif: Avance +4"
   },
   {
     "index": 5,
@@ -49,9 +48,8 @@
   },
   {
     "index": 8,
-    "label": "8",
-    "type": "",
-    "value": 0
+    "type": "goal",
+    "label": "🎯 Objectif: → +10"
   },
   {
     "index": 9,
@@ -73,9 +71,8 @@
   },
   {
     "index": 12,
-    "label": "12",
-    "type": "",
-    "value": 0
+    "type": "goal",
+    "label": "🎯 Objectif: Rejouer"
   },
   {
     "index": 13,
@@ -97,9 +94,8 @@
   },
   {
     "index": 16,
-    "label": "16",
-    "type": "",
-    "value": 0
+    "type": "goal",
+    "label": "🎯 Objectif: Vole 1 flèche"
   },
   {
     "index": 17,
@@ -139,9 +135,9 @@
   },
   {
     "index": 23,
-    "label": "23",
-    "type": "",
-    "value": 0
+    "type": "bonus",
+    "value": 3,
+    "label": "+3 bonus"
   },
   {
     "index": 24,
@@ -188,9 +184,9 @@
   },
   {
     "index": 31,
-    "label": "31",
-    "type": "",
-    "value": 0
+    "type": "bonus",
+    "value": 2,
+    "label": "+2 bonus"
   },
   {
     "index": 32,
@@ -206,9 +202,9 @@
   },
   {
     "index": 34,
-    "label": "34",
-    "type": "",
-    "value": 0
+    "type": "replay",
+    "value": 0,
+    "label": "Rejouer"
   },
   {
     "index": 35,
@@ -218,9 +214,9 @@
   },
   {
     "index": 36,
-    "label": "36",
-    "type": "",
-    "value": 0
+    "type": "malus",
+    "value": 3,
+    "label": "-3 malus"
   },
   {
     "index": 37,
@@ -273,9 +269,9 @@
   },
   {
     "index": 45,
-    "label": "45",
-    "type": "",
-    "value": 0
+    "type": "skip",
+    "value": 1,
+    "label": "Saut 1 tour"
   },
   {
     "index": 46,
@@ -291,9 +287,9 @@
   },
   {
     "index": 48,
-    "label": "48",
-    "type": "",
-    "value": 0
+    "type": "steal",
+    "value": 1,
+    "label": "Vole 1 flèche"
   },
   {
     "index": 49,
@@ -303,9 +299,9 @@
   },
   {
     "index": 50,
-    "label": "50",
-    "type": "",
-    "value": 0
+    "type": "bonus",
+    "value": 2,
+    "label": "+2 bonus"
   },
   {
     "index": 51,
@@ -363,9 +359,10 @@
   },
   {
     "index": 60,
-    "label": "60",
-    "type": "",
-    "value": 0
+    "type": "mystery",
+    "value": 0,
+    "label": "Mystère ?",
+    "hidden": true
   },
   {
     "index": 61,

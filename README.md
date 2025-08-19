@@ -1,4 +1,10 @@
-# Arcathlon Spirale (2v2, sans dés)
-Jeu en spirale style “jeu de l’oie”. À chaque tour, chaque joueur tire 3 flèches → on garde la meilleure de chacun.
-Score d’équipe = meilleure(J1) + meilleure(J2). L’équipe avance d’autant de cases; effets à l’arrivée.
-Déployer sur GitHub Pages : push, Settings → Pages → Branch `main`, dossier `/`.
+# Arcathlon Spirale v2 (2v2, sans dés)
+
+- Saisie **épurée** : flèches autorisées = 0, 6, 7, 8, 9, 10.
+- Calcul animé des meilleures flèches, **prévisualisation** du déplacement, **animation** case par case.
+- Plateau **spirale** avec cases visibles de **stratégie** (Objectifs: +4, → +10, Rejouer, Vole 1 flèche) + cases **mystère**.
+- Effets : bonus/malus/saut de tour/téléport/rejouer/vol de flèche (adversaire limité à 2 flèches lors du prochain tour).
+- **Annulation animée** du dernier tour, sauvegarde locale + export/import.
+
+Déploiement : pousser ces fichiers sur GitHub Pages (branche `main`, dossier `/`).
+

@@ -1,19 +1,22 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Arcathlon – Spirale</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Arcathlon – Spirale v2</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale</h1>
+  <h1>🏹 Arcathlon Spirale v2</h1>
   <nav>
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
     <button id="btn-resume" class="btn">Reprendre</button>
     <button id="btn-export" class="btn">Exporter sauvegarde</button>
-    <label class="file-btn">Importer sauvegarde <input type="file" id="import-save" accept=".json,application/json"></label>
+    <label class="file-btn">
+      Importer sauvegarde
+      <input type="file" id="import-save" accept=".json,application/json">
+    </label>
     <button id="btn-help" class="btn ghost">Aide</button>
   </nav>
 </header>
@@ -22,34 +25,38 @@
   <section class="card">
     <h2>Paramètres (2 contre 2)</h2>
     <div class="grid-2">
-      <div class="team-card" style="--team:#4dabf7">
+      <div class="team-card" style="--team:#5ac8fa">
         <h3>Équipe A</h3>
-        <label>Nom d'équipe</label><input id="teamA-name" type="text" value="Équipe A">
-        <label>Joueur A1</label><input id="teamA-p1" type="text" value="A1">
-        <label>Joueur A2</label><input id="teamA-p2" type="text" value="A2">
-        <label>Couleur</label><input id="teamA-color" type="color" value="#4dabf7">
+        <label>Nom d'équipe</label>
+        <input id="teamA-name" type="text" value="Équipe A">
+        <label>Joueur A1</label>
+        <input id="teamA-p1" type="text" value="A1">
+        <label>Joueur A2</label>
+        <input id="teamA-p2" type="text" value="A2">
+        <label>Couleur</label>
+        <input id="teamA-color" type="color" value="#5ac8fa">
       </div>
-      <div class="team-card" style="--team:#ff6b6b">
+      <div class="team-card" style="--team:#ff7b7b">
         <h3>Équipe B</h3>
-        <label>Nom d'équipe</label><input id="teamB-name" type="text" value="Équipe B">
-        <label>Joueur B1</label><input id="teamB-p1" type="text" value="B1">
-        <label>Joueur B2</label><input id="teamB-p2" type="text" value="B2">
-        <label>Couleur</label><input id="teamB-color" type="color" value="#ff6b6b">
-      </div>
-      <div class="col-span-2">
-        <label>Plateau</label>
-        <div class="row gap">
-          <select id="board-select">
-            <option value="data/board-default.json" selected>Spirale (63 cases)</option>
-          </select>
-        </div>
+        <label>Nom d'équipe</label>
+        <input id="teamB-name" type="text" value="Équipe B">
+        <label>Joueur B1</label>
+        <input id="teamB-p1" type="text" value="B1">
+        <label>Joueur B2</label>
+        <input id="teamB-p2" type="text" value="B2">
+        <label>Couleur</label>
+        <input id="teamB-color" type="color" value="#ff7b7b">
       </div>
     </div>
-    <div class="row end"><button id="btn-start" class="btn primary large">Démarrer ▶</button></div>
+    <div class="row end">
+      <button id="btn-start" class="btn primary large">Démarrer ▶</button>
+    </div>
   </section>
+
   <section class="card">
     <h3>Principe du score</h3>
-    <p>Chaque tour, chaque joueur tire <b>3 flèches</b>. On garde la <b>meilleure</b> de chacun. L’équipe avance d’autant de cases que la <b>somme</b> des deux meilleures.</p>
+    <p>Saisie épurée : chaque flèche peut valoir <b>0</b>, <b>6</b>, <b>7</b>, <b>8</b>, <b>9</b> ou <b>10</b>.<br>
+    On garde la meilleure flèche de chaque tireur. Le binôme avance de la <b>somme</b> de ses 2 meilleures.</p>
   </section>
 </main>
 
@@ -57,64 +64,66 @@
   <section class="layout">
     <aside class="panel">
       <div class="round-box">Tour <span id="round-no">1</span></div>
+
       <div class="team-score" data-team="A">
         <h3 id="nameA">Équipe A</h3>
-        <div class="archer">
-          <div class="who" id="A1-name">A1</div>
-          <div class="row gap">
-            <input type="number" min="0" max="10" id="A1-a1" placeholder="0–10">
-            <input type="number" min="0" max="10" id="A1-a2" placeholder="0–10">
-            <input type="number" min="0" max="10" id="A1-a3" placeholder="0–10">
-          </div>
-          <div class="best">Meilleure: <span id="A1-best">0</span></div>
-        </div>
-        <div class="archer">
-          <div class="who" id="A2-name">A2</div>
-          <div class="row gap">
-            <input type="number" min="0" max="10" id="A2-a1" placeholder="0–10">
-            <input type="number" min="0" max="10" id="A2-a2" placeholder="0–10">
-            <input type="number" min="0" max="10" id="A2-a3" placeholder="0–10">
-          </div>
-          <div class="best">Meilleure: <span id="A2-best">0</span></div>
-        </div>
+        <div class="debuff" id="A-debuff" hidden>⚠️ Cette équipe n’aura que <b>2 flèches</b> par tireur au prochain tour.</div>
+        <div class="archer" id="A1"></div>
+        <div class="archer" id="A2"></div>
         <div class="total">Score équipe: <span id="A-total">0</span></div>
       </div>
+
       <div class="team-score" data-team="B">
         <h3 id="nameB">Équipe B</h3>
-        <div class="archer">
-          <div class="who" id="B1-name">B1</div>
-          <div class="row gap">
-            <input type="number" min="0" max="10" id="B1-a1" placeholder="0–10">
-            <input type="number" min="0" max="10" id="B1-a2" placeholder="0–10">
-            <input type="number" min="0" max="10" id="B1-a3" placeholder="0–10">
-          </div>
-          <div class="best">Meilleure: <span id="B1-best">0</span></div>
-        </div>
-        <div class="archer">
-          <div class="who" id="B2-name">B2</div>
-          <div class="row gap">
-            <input type="number" min="0" max="10" id="B2-a1" placeholder="0–10">
-            <input type="number" min="0" max="10" id="B2-a2" placeholder="0–10">
-            <input type="number" min="0" max="10" id="B2-a3" placeholder="0–10">
-          </div>
-          <div class="best">Meilleure: <span id="B2-best">0</span></div>
-        </div>
+        <div class="debuff" id="B-debuff" hidden>⚠️ Cette équipe n’aura que <b>2 flèches</b> par tireur au prochain tour.</div>
+        <div class="archer" id="B1"></div>
+        <div class="archer" id="B2"></div>
         <div class="total">Score équipe: <span id="B-total">0</span></div>
       </div>
+
       <div class="row gap wrap">
         <button id="btn-calc" class="btn">Calculer</button>
         <button id="btn-validate" class="btn primary">Valider le tour</button>
-        <button id="btn-undo" class="btn ghost">Annuler dernier tour</button>
+        <button id="btn-undo" class="btn ghost">Annuler (animé)</button>
         <button id="btn-save" class="btn">💾 Sauvegarder</button>
       </div>
     </aside>
+
     <section class="board-wrap">
-      <svg id="board" viewBox="0 0 800 800" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+      <svg id="board" viewBox="0 0 900 900" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+      <div class="legend">
+        <span class="chip bonus">Bonus</span>
+        <span class="chip malus">Malus</span>
+        <span class="chip skip">Saut 1 tour</span>
+        <span class="chip mystery">Mystère</span>
+        <span class="chip teleport">Téléport</span>
+        <span class="chip goal">Objectif</span>
+        <span class="chip steal">Vole une flèche</span>
+      </div>
     </section>
   </section>
 </main>
 
-<dialog id="modal"><div id="modal-content"></div><div class="row end gap"><button id="modal-close" class="btn primary">OK</button></div></dialog>
-<dialog id="help"><h2>📘 Aide</h2><p>Bonus/malus/saut 1 tour/téléport/mystère révélés en arrivant.</p><div class="row end gap"><button id="help-close" class="btn primary">Fermer</button></div></dialog>
+<dialog id="modal">
+  <div id="modal-content"></div>
+  <div class="row end gap">
+    <button id="modal-close" class="btn primary">OK</button>
+  </div>
+</dialog>
+
+<dialog id="help">
+  <h2>📘 Aide (EPS)</h2>
+  <ul>
+    <li>Chaque tireur dispose de 3 flèches (ou 2 si pénalité). Choix possibles : 0, 6, 7, 8, 9, 10.</li>
+    <li>Somme des deux meilleures → avance du binôme.</li>
+    <li>Cases visibles (stratégie) : Objectifs “avance +4”, “→ +10”, “Rejouer”, “Vole 1 flèche”…</li>
+    <li>Cases mystère : se révèlent lorsqu’on les atteint.</li>
+  </ul>
+  <div class="row end gap">
+    <button id="help-close" class="btn primary">Fermer</button>
+  </div>
+</dialog>
+
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>
