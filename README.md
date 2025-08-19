@@ -1,9 +1,10 @@
-# Arcathlon Spirale v3 – Ciné‑mode plein écran
+# Arcathlon Spirale v3.2 – QR “Bilan” (ScanProf)
 
-- **Ciné‑mode** plein écran automatique pendant les déplacements (activable en haut).  
-- **Saisie épurée** 0/6/7/8/9/10 par flèche, **meilleurs tirs** animés, **déplacements** en spirale avec surbrillance.  
-- Cases **Objectif** (ex. +4 / → +10 / Rejouer / Vole 1 flèche) + **Mystère**.  
-- **Annulation animée**, confettis à l’arrivée, sauvegarde locale + export/import.
+- Bouton **QR Bilan** : génère un QR scannable.
+  - **Format Arcathlon (points)** : `[ { nom, prenom, classe, sexe, points_total, vainqueur }, ... ]`
+  - **Format ScanProf v4** : `[ { nom, prenom, classe, sexe, "200":"M:SS" } ]` (on encode le cumul de points en `M:SS` juste pour compat — si votre app attend des temps).
+- **Ciné-mode** plein écran auto pendant les déplacements (activable en haut).
+- Saisie 0/6/7/8/9/10, calcul animé, déplacements en spirale, cases objectif/mystère, annulation animée, confettis.
 
 Déploiement : pousser sur GitHub Pages (branche `main`, folder `/`).
 
