@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arcathlon – Spirale</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
@@ -13,10 +13,7 @@
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
     <button id="btn-resume" class="btn">Reprendre</button>
     <button id="btn-export" class="btn">Exporter sauvegarde</button>
-    <label class="file-btn">
-      Importer sauvegarde
-      <input type="file" id="import-save" accept=".json,application/json">
-    </label>
+    <label class="file-btn">Importer sauvegarde <input type="file" id="import-save" accept=".json,application/json"></label>
     <button id="btn-help" class="btn ghost">Aide</button>
   </nav>
 </header>
@@ -27,25 +24,17 @@
     <div class="grid-2">
       <div class="team-card" style="--team:#4dabf7">
         <h3>Équipe A</h3>
-        <label>Nom d'équipe</label>
-        <input id="teamA-name" type="text" value="Équipe A">
-        <label>Joueur A1</label>
-        <input id="teamA-p1" type="text" value="A1">
-        <label>Joueur A2</label>
-        <input id="teamA-p2" type="text" value="A2">
-        <label>Couleur</label>
-        <input id="teamA-color" type="color" value="#4dabf7">
+        <label>Nom d'équipe</label><input id="teamA-name" type="text" value="Équipe A">
+        <label>Joueur A1</label><input id="teamA-p1" type="text" value="A1">
+        <label>Joueur A2</label><input id="teamA-p2" type="text" value="A2">
+        <label>Couleur</label><input id="teamA-color" type="color" value="#4dabf7">
       </div>
       <div class="team-card" style="--team:#ff6b6b">
         <h3>Équipe B</h3>
-        <label>Nom d'équipe</label>
-        <input id="teamB-name" type="text" value="Équipe B">
-        <label>Joueur B1</label>
-        <input id="teamB-p1" type="text" value="B1">
-        <label>Joueur B2</label>
-        <input id="teamB-p2" type="text" value="B2">
-        <label>Couleur</label>
-        <input id="teamB-color" type="color" value="#ff6b6b">
+        <label>Nom d'équipe</label><input id="teamB-name" type="text" value="Équipe B">
+        <label>Joueur B1</label><input id="teamB-p1" type="text" value="B1">
+        <label>Joueur B2</label><input id="teamB-p2" type="text" value="B2">
+        <label>Couleur</label><input id="teamB-color" type="color" value="#ff6b6b">
       </div>
       <div class="col-span-2">
         <label>Plateau</label>
@@ -56,15 +45,11 @@
         </div>
       </div>
     </div>
-    <div class="row end">
-      <button id="btn-start" class="btn primary large">Démarrer ▶</button>
-    </div>
+    <div class="row end"><button id="btn-start" class="btn primary large">Démarrer ▶</button></div>
   </section>
-
   <section class="card">
     <h3>Principe du score</h3>
-    <p>Chaque tour, chaque joueur tire <b>3 flèches</b>. On garde <b>la meilleure flèche de chaque joueur</b>.<br>
-    L’équipe additionne ces deux meilleurs scores et <b>avance d’autant de cases</b>.</p>
+    <p>Chaque tour, chaque joueur tire <b>3 flèches</b>. On garde la <b>meilleure</b> de chacun. L’équipe avance d’autant de cases que la <b>somme</b> des deux meilleures.</p>
   </section>
 </main>
 
@@ -94,7 +79,6 @@
         </div>
         <div class="total">Score équipe: <span id="A-total">0</span></div>
       </div>
-
       <div class="team-score" data-team="B">
         <h3 id="nameB">Équipe B</h3>
         <div class="archer">
@@ -117,7 +101,6 @@
         </div>
         <div class="total">Score équipe: <span id="B-total">0</span></div>
       </div>
-
       <div class="row gap wrap">
         <button id="btn-calc" class="btn">Calculer</button>
         <button id="btn-validate" class="btn primary">Valider le tour</button>
@@ -125,20 +108,13 @@
         <button id="btn-save" class="btn">💾 Sauvegarder</button>
       </div>
     </aside>
-
     <section class="board-wrap">
-      <svg id="board" viewBox="0 0 800 800" class="board-svg"></svg>
+      <svg id="board" viewBox="0 0 800 800" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
     </section>
   </section>
 </main>
 
-<dialog id="modal">
-  <div id="modal-content"></div>
-  <div class="row end gap">
-    <button id="modal-close" class="btn primary">OK</button>
-  </div>
-</dialog>
-
+<dialog id="modal"><div id="modal-content"></div><div class="row end gap"><button id="modal-close" class="btn primary">OK</button></div></dialog>
+<dialog id="help"><h2>📘 Aide</h2><p>Bonus/malus/saut 1 tour/téléport/mystère révélés en arrivant.</p><div class="row end gap"><button id="help-close" class="btn primary">Fermer</button></div></dialog>
 <script src="app.js"></script>
-</body>
-</html>
+</body></html>
