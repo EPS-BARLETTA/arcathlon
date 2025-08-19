@@ -1,18 +1,10 @@
-# Arcathlon – Jeu de l'Oie (Multijoueurs local)
+# Arcathlon Spirale (2v2, sans dés)
 
-Version corrigée, **prête GitHub Pages**.
-- Plateau par défaut : `data/board-default.json` (référence alignée dans `index.html`).
-- Correctif : l'écouteur `input` des joueurs est attaché **une seule fois** (plus de doublons).
-- Fallback : si le plateau ne se charge pas, un plateau 63 cases est généré côté client.
+Jeu style “jeu de l’oie” en **spirale SVG**. À chaque tour, chaque joueur tire 3 flèches → on garde la meilleure par joueur.  
+**Score d’équipe** = meilleure(J1) + meilleure(J2). L’équipe **avance** d’autant de cases (effets à l’arrivée).
 
-## Déploiement (GitHub Pages)
-1. Poussez ces fichiers à la racine du dépôt (`main`).
-2. `Settings → Pages` → Source `main`, dossier `/`.
-3. Ouvrez l'URL Pages.
+## Déploiement GitHub Pages
+- Pousser ces fichiers à la racine du dépôt → Settings → Pages → Branch `main`, dossier `/`.
 
-## Imports
-- Joueurs CSV : `nom,couleur` (couleur optionnelle).
-- Plateau CSV : `index,label,type,valeur`.
-Types : `advance`, `back`, `skip`, `roll_again`, `teleport`.
-
-Amusez-vous bien 🎲
+## Effets de cases
+- `bonus` (+X), `malus` (-X), `skip` (saut 1 tour), `teleport` (→ case), `mystery` (révélé à l’arrivée).

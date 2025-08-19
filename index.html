@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Jeu de l'Oie Multi</title>
+  <title>Arcathlon – Spirale</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon – Jeu de l'Oie</h1>
+  <h1>🏹 Arcathlon Spirale</h1>
   <nav>
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
     <button id="btn-resume" class="btn">Reprendre</button>
@@ -23,40 +23,36 @@
 
 <main id="screen-setup" class="screen active">
   <section class="card">
-    <h2>Paramètres</h2>
+    <h2>Paramètres (2 contre 2)</h2>
     <div class="grid-2">
-      <div>
-        <label>Nombre de joueurs</label>
-        <input id="player-count" type="number" min="2" max="8" value="2">
+      <div class="team-card" style="--team:#4dabf7">
+        <h3>Équipe A</h3>
+        <label>Nom d'équipe</label>
+        <input id="teamA-name" type="text" value="Équipe A">
+        <label>Joueur A1</label>
+        <input id="teamA-p1" type="text" value="A1">
+        <label>Joueur A2</label>
+        <input id="teamA-p2" type="text" value="A2">
+        <label>Couleur</label>
+        <input id="teamA-color" type="color" value="#4dabf7">
       </div>
-      <div>
-        <label>Dés (1 ou 2)</label>
-        <select id="dice-count">
-          <option value="1">1 dé</option>
-          <option value="2" selected>2 dés</option>
-        </select>
-      </div>
-      <div class="col-span-2">
-        <label>Nom des joueurs</label>
-        <div id="players-list" class="players-list"></div>
-        <div class="row gap">
-          <button id="btn-colors" class="btn small">Couleurs aléatoires</button>
-          <label class="file-btn small">
-            Importer joueurs (CSV)
-            <input type="file" id="import-players" accept=".csv,text/csv">
-          </label>
-        </div>
+      <div class="team-card" style="--team:#ff6b6b">
+        <h3>Équipe B</h3>
+        <label>Nom d'équipe</label>
+        <input id="teamB-name" type="text" value="Équipe B">
+        <label>Joueur B1</label>
+        <input id="teamB-p1" type="text" value="B1">
+        <label>Joueur B2</label>
+        <input id="teamB-p2" type="text" value="B2">
+        <label>Couleur</label>
+        <input id="teamB-color" type="color" value="#ff6b6b">
       </div>
       <div class="col-span-2">
         <label>Plateau</label>
         <div class="row gap">
           <select id="board-select">
-            <option value="data/board-default.json" selected>Classique (63 cases)</option>
+            <option value="data/board-default.json" selected>Spirale (63 cases)</option>
           </select>
-          <label class="file-btn small">
-            Importer plateau (CSV/JSON)
-            <input type="file" id="import-board" accept=".csv,text/csv,.json,application/json">
-          </label>
         </div>
       </div>
     </div>
@@ -64,50 +60,82 @@
       <button id="btn-start" class="btn primary large">Démarrer ▶</button>
     </div>
   </section>
+
+  <section class="card">
+    <h3>Principe du score</h3>
+    <p>Chaque tour, chaque joueur tire <b>3 flèches</b>. On garde <b>la meilleure flèche de chaque joueur</b>.<br>
+    L’équipe additionne ces deux meilleurs scores et <b>avance d’autant de cases</b>.</p>
+  </section>
 </main>
 
 <main id="screen-game" class="screen">
-  <section class="topbar">
-    <div class="row gap wrap">
-      <button class="btn" id="btn-home">🏠 Accueil</button>
-      <button class="btn" id="btn-save">💾 Sauvegarder</button>
-      <button class="btn" id="btn-reset">🔴 Réinitialiser</button>
-      <button class="btn" id="btn-toggle-zoom">🔍 Zoom</button>
-    </div>
-    <div class="turn-box">
-      <div>Au tour de <span id="turn-name">—</span></div>
-      <div class="dice-area">
-        <button id="btn-roll" class="btn primary huge">🎲 Lancer</button>
-        <div id="dice-result" class="dice-result">—</div>
+  <section class="layout">
+    <aside class="panel">
+      <div class="round-box">Tour <span id="round-no">1</span></div>
+      <div class="team-score" data-team="A">
+        <h3 id="nameA">Équipe A</h3>
+        <div class="archer">
+          <div class="who" id="A1-name">A1</div>
+          <div class="row gap">
+            <input type="number" min="0" max="10" id="A1-a1" placeholder="0–10">
+            <input type="number" min="0" max="10" id="A1-a2" placeholder="0–10">
+            <input type="number" min="0" max="10" id="A1-a3" placeholder="0–10">
+          </div>
+          <div class="best">Meilleure: <span id="A1-best">0</span></div>
+        </div>
+        <div class="archer">
+          <div class="who" id="A2-name">A2</div>
+          <div class="row gap">
+            <input type="number" min="0" max="10" id="A2-a1" placeholder="0–10">
+            <input type="number" min="0" max="10" id="A2-a2" placeholder="0–10">
+            <input type="number" min="0" max="10" id="A2-a3" placeholder="0–10">
+          </div>
+          <div class="best">Meilleure: <span id="A2-best">0</span></div>
+        </div>
+        <div class="total">Score équipe: <span id="A-total">0</span></div>
       </div>
-    </div>
-  </section>
 
-  <section class="game-wrap">
-    <div id="board" class="board"></div>
-  </section>
+      <div class="team-score" data-team="B">
+        <h3 id="nameB">Équipe B</h3>
+        <div class="archer">
+          <div class="who" id="B1-name">B1</div>
+          <div class="row gap">
+            <input type="number" min="0" max="10" id="B1-a1" placeholder="0–10">
+            <input type="number" min="0" max="10" id="B1-a2" placeholder="0–10">
+            <input type="number" min="0" max="10" id="B1-a3" placeholder="0–10">
+          </div>
+          <div class="best">Meilleure: <span id="B1-best">0</span></div>
+        </div>
+        <div class="archer">
+          <div class="who" id="B2-name">B2</div>
+          <div class="row gap">
+            <input type="number" min="0" max="10" id="B2-a1" placeholder="0–10">
+            <input type="number" min="0" max="10" id="B2-a2" placeholder="0–10">
+            <input type="number" min="0" max="10" id="B2-a3" placeholder="0–10">
+          </div>
+          <div class="best">Meilleure: <span id="B2-best">0</span></div>
+        </div>
+        <div class="total">Score équipe: <span id="B-total">0</span></div>
+      </div>
 
-  <section class="players-bar" id="players-bar"></section>
+      <div class="row gap wrap">
+        <button id="btn-calc" class="btn">Calculer</button>
+        <button id="btn-validate" class="btn primary">Valider le tour</button>
+        <button id="btn-undo" class="btn ghost">Annuler dernier tour</button>
+        <button id="btn-save" class="btn">💾 Sauvegarder</button>
+      </div>
+    </aside>
+
+    <section class="board-wrap">
+      <svg id="board" viewBox="0 0 800 800" class="board-svg"></svg>
+    </section>
+  </section>
 </main>
 
 <dialog id="modal">
   <div id="modal-content"></div>
   <div class="row end gap">
     <button id="modal-close" class="btn primary">OK</button>
-  </div>
-</dialog>
-
-<dialog id="help">
-  <h2>📘 Aide</h2>
-  <p><b>But</b> : Atteindre la case finale (63) en premier. Avance selon le lancer et applique l'effet de la case.</p>
-  <ul>
-    <li><b>Importer plateau</b> CSV colonnes : <code>index,label,type,valeur</code>.</li>
-    <li>Types : <code>advance</code>, <code>back</code>, <code>skip</code>, <code>roll_again</code>, <code>teleport</code>.</li>
-    <li><b>Importer joueurs</b> CSV : <code>nom,couleur</code> (couleur optionnelle).</li>
-    <li><b>Sauvegarde</b> : export/import JSON + sauvegarde locale.</li>
-  </ul>
-  <div class="row end gap">
-    <button id="help-close" class="btn primary">Fermer</button>
   </div>
 </dialog>
 

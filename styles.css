@@ -1,61 +1,29 @@
-/* Tactile, sombre, sobre */
-:root{
-  --bg:#0b0d12; --panel:#121722; --muted:#99a3b3; --text:#f2f5f9;
-  --accent:#4cc9f0; --primary:#16db65; --danger:#ef476f; --shadow:0 8px 24px rgba(0,0,0,.3);
-}
+/* Minimal styles */ 
+:root{--bg:#0b0d12;--panel:#141a27;--text:#f2f5f9;--muted:#9aa4b6;--primary:#16db65;--accent:#4cc9f0;--warn:#ffd166;--bonus:#2ec4b6;--malus:#ff7b7b}
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial;
-  background:linear-gradient(180deg,#0a0f1c,#0b0d12); color:var(--text)}
-.app-header{position:sticky; top:0; z-index:10; display:flex; gap:16px; align-items:center; justify-content:space-between;
-  padding:12px 16px; background:#0b0f18; box-shadow:var(--shadow)}
-.app-header h1{margin:0; font-size:20px}
-nav{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-.btn{background:#22304a; color:var(--text); border:none; border-radius:12px; padding:10px 14px; cursor:pointer; box-shadow:var(--shadow); font-weight:600; font-size:14px; touch-action:manipulation}
-.btn.small{padding:6px 10px; font-size:12px; border-radius:10px}
-.btn.large{padding:12px 18px; font-size:16px}
-.btn.huge{padding:14px 22px; font-size:20px}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto; background:linear-gradient(180deg,#0a0f1c,#0b0d12); color:var(--text)}
+.app-header{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#0b0f18}
+.btn{background:#22304a;color:#fff;border:none;border-radius:12px;padding:10px 14px;cursor:pointer}
 .btn.primary{background:linear-gradient(135deg,#3ddc97,#16db65)}
-.btn.ghost{background:transparent; border:1px solid #334; box-shadow:none}
-.btn:active{transform:translateY(1px)}
-.file-btn{position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px; background:#1c2436; padding:10px 14px; border-radius:12px; cursor:pointer}
-.file-btn.small{padding:6px 10px; font-size:12px}
-.file-btn input{position:absolute; inset:0; opacity:0; cursor:pointer}
-.screen{display:none; padding:16px; max-width:1100px; margin:0 auto}
+.btn.ghost{background:transparent;border:1px solid #334}
+.screen{display:none;max-width:1200px;margin:0 auto;padding:16px}
 .screen.active{display:block}
-.card{background:var(--panel); border-radius:16px; padding:16px; box-shadow:var(--shadow); margin:16px 0}
-.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.card{background:#141a27;border-radius:16px;padding:16px;margin:16px 0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .col-span-2{grid-column:span 2}
-.row{display:flex; align-items:center}
-.row.wrap{flex-wrap:wrap}
-.row.gap{gap:10px}
-.row.end{justify-content:flex-end}
-.players-list{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px}
-.player-item{display:flex; gap:8px; background:#1a2232; border-radius:12px; padding:8px; align-items:center}
-.player-item input[type=text]{flex:1; padding:8px; border-radius:8px; border:1px solid #334; background:#0f1624; color:var(--text)}
-.color-dot{width:20px; height:20px; border-radius:50%}
-.topbar{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap}
-.turn-box{display:flex; gap:12px; align-items:center}
-.dice-area{display:flex; gap:12px; align-items:center}
-.dice-result{font-size:24px; font-weight:800; min-width:48px; text-align:center}
-.game-wrap{overflow:auto; background:#0a0f1a; border-radius:16px; padding:10px; margin-top:10px; box-shadow:var(--shadow)}
-.board{display:grid; grid-auto-flow:column; grid-auto-columns:100px; gap:8px; align-items:center; padding:8px; min-height:160px}
-.square{background:#151c2a; border:1px solid #2a3652; border-radius:14px; width:100px; height:100px; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative; text-align:center; padding:6px}
-.square .idx{position:absolute; top:6px; left:6px; font-size:11px; color:var(--muted)}
-.square.finish{background:linear-gradient(135deg,#7847ff,#ffb703); border:0}
-.square.effect-advance{outline:2px solid #16db65}
-.square.effect-back{outline:2px solid #ef476f}
-.square.effect-skip{outline:2px solid #ffd166}
-.square.effect-roll{outline:2px solid #4cc9f0}
-.token{position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); display:flex; gap:4px; flex-wrap:wrap; justify-content:center; width:92%}
-.token .p{width:14px; height:14px; border-radius:50%; outline:2px solid rgba(255,255,255,.25)}
-.players-bar{display:flex; gap:8px; flex-wrap:wrap; padding:12px 0}
-.player-card{flex:1 1 240px; min-width:240px; background:#121725; border-radius:14px; padding:10px; box-shadow:var(--shadow); border-left:6px solid transparent}
-.player-card .name{font-weight:800}
-.player-card .meta{color:var(--muted); font-size:12px}
-.player-card.turn{border-left-color:var(--primary)}
-dialog{border:none; border-radius:16px; padding:16px; background:#101625; color:var(--text); box-shadow:var(--shadow)}
-dialog::backdrop{background:rgba(0,0,0,.6)}
-#modal-content{margin-bottom:10px}
-label{display:block; margin:4px 0; color:var(--muted)}
-input,select{width:100%; padding:10px; border-radius:10px; border:1px solid #334; background:#0f1624; color:var(--text)}
+.team-card{background:#101726;border-left:6px solid var(--team);border-radius:12px;padding:12px}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:12px}
+.panel{background:#141a27;border-radius:16px;padding:12px}
+.team-score{background:#0f1524;border-radius:12px;padding:10px;margin-bottom:12px}
+.archer{background:#0c1220;border-radius:10px;padding:8px;margin:8px 0}
+.board-wrap{background:#141a27;border-radius:16px;padding:8px}
+.board-svg{width:100%;height:calc(100vh - 220px);background:#0a0f1a;border-radius:12px}
+.square text{font-size:9px;fill:#c9d2e3}
+.square rect{fill:#151c2a;stroke:#2a3652;stroke-width:1.2;rx:10;ry:10}
+.square.bonus rect{outline:2px solid var(--bonus)}
+.square.malus rect{outline:2px solid var(--malus)}
+.square.skip rect{outline:2px solid var(--warn)}
+.square.mystery rect{outline:2px solid var(--accent)}
+.square.teleport rect{outline:2px solid #a78bfa}
+.square.finish rect{fill:#7b2cbf;stroke-width:0}
+.token circle{stroke:#fff8;stroke-width:2}
