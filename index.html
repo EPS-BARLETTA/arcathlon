@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jeu de l'Oie – Multi</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <h1>🐣 Jeu de l'Oie – Multi</h1>
+  <nav>
+    <button id="btn-new" class="btn primary">Nouvelle partie</button>
+    <button id="btn-resume" class="btn">Reprendre</button>
+    <button id="btn-export" class="btn">Exporter sauvegarde</button>
+    <label class="file-btn">
+      Importer sauvegarde
+      <input type="file" id="import-save" accept=".json,application/json">
+    </label>
+    <button id="btn-help" class="btn ghost">Aide</button>
+  </nav>
+</header>
+
+<main id="screen-setup" class="screen active">
+  <section class="card">
+    <h2>Paramètres de la partie</h2>
+    <div class="grid-2">
+      <div>
+        <label>Nombre de joueurs</label>
+        <input id="player-count" type="number" min="2" max="8" value="2">
+      </div>
+      <div>
+        <label>Dés (1 ou 2)</label>
+        <select id="dice-count">
+          <option value="1">1 dé</option>
+          <option value="2" selected>2 dés</option>
+        </select>
+      </div>
+      <div class="col-span-2">
+        <label>Nom des joueurs</label>
+        <div id="players-list" class="players-list"></div>
+        <div class="row gap">
+          <button id="btn-colors" class="btn small">Couleurs aléatoires</button>
+          <label class="file-btn small">
+            Importer joueurs (CSV)
+            <input type="file" id="import-players" accept=".csv,text/csv">
+          </label>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <label>Plateau</label>
+        <div class="row gap">
+          <select id="board-select">
+            <option value="data/board-default.json" selected>Classique (63 cases)</option>
+          </select>
+          <label class="file-btn small">
+            Importer plateau (CSV/JSON)
+            <input type="file" id="import-board" accept=".csv,text/csv,.json,application/json">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="row end">
+      <button id="btn-start" class="btn primary large">Démarrer ▶</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Astuce</h3>
+    <p>Vous pouvez déployer ce projet sur <b>GitHub Pages</b> : poussez ce dossier dans un dépôt, puis activez Pages depuis les paramètres (branche <code>main</code>, dossier <code>/</code>).</p>
+  </section>
+</main>
+
+<main id="screen-game" class="screen">
+  <section class="topbar">
+    <div class="row gap wrap">
+      <button class="btn" id="btn-home">🏠 Accueil</button>
+      <button class="btn" id="btn-save">💾 Sauvegarder</button>
+      <button class="btn" id="btn-reset">🔴 Réinitialiser</button>
+      <button class="btn" id="btn-toggle-zoom">🔍 Zoom</button>
+    </div>
+    <div class="turn-box">
+      <div>Au tour de <span id="turn-name">—</span></div>
+      <div class="dice-area">
+        <button id="btn-roll" class="btn primary huge">🎲 Lancer</button>
+        <div id="dice-result" class="dice-result">—</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="game-wrap">
+    <div id="board" class="board"></div>
+  </section>
+
+  <section class="players-bar" id="players-bar">
+  </section>
+</main>
+
+<dialog id="modal">
+  <div id="modal-content"></div>
+  <div class="row end gap">
+    <button id="modal-close" class="btn primary">OK</button>
+  </div>
+</dialog>
+
+<dialog id="help">
+  <h2>📘 Aide</h2>
+  <p><b>But du jeu</b> : Atteindre la case finale (63) en premier. On avance selon le lancer de dé(s) et on applique l'effet de la case d'arrivée.</p>
+  <p><b>Cases</b> : certaines cases font avancer/reculer, rejouer, sauter un tour, etc. C'est configurable via un fichier CSV/JSON.</p>
+  <ul>
+    <li><b>Importer plateau</b> : un CSV avec colonnes <code>index,label,type,valeur</code>.</li>
+    <li><b>Importer joueurs</b> : un CSV avec colonnes <code>nom,couleur</code> (couleur facultative).</li>
+    <li><b>Sauvegarde</b> : export/import d'une partie (JSON).</li>
+  </ul>
+  <div class="row end gap">
+    <button id="help-close" class="btn primary">Fermer</button>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
