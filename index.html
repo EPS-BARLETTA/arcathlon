@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Jeu de l'Oie – Multi</title>
+  <title>Arcathlon – Jeu de l'Oie Multi</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🐣 Jeu de l'Oie – Multi</h1>
+  <h1>🏹 Arcathlon – Jeu de l'Oie</h1>
   <nav>
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
     <button id="btn-resume" class="btn">Reprendre</button>
@@ -23,7 +23,7 @@
 
 <main id="screen-setup" class="screen active">
   <section class="card">
-    <h2>Paramètres de la partie</h2>
+    <h2>Paramètres</h2>
     <div class="grid-2">
       <div>
         <label>Nombre de joueurs</label>
@@ -64,11 +64,6 @@
       <button id="btn-start" class="btn primary large">Démarrer ▶</button>
     </div>
   </section>
-
-  <section class="card">
-    <h3>Astuce</h3>
-    <p>Vous pouvez déployer ce projet sur <b>GitHub Pages</b> : poussez ce dossier dans un dépôt, puis activez Pages depuis les paramètres (branche <code>main</code>, dossier <code>/</code>).</p>
-  </section>
 </main>
 
 <main id="screen-game" class="screen">
@@ -92,8 +87,7 @@
     <div id="board" class="board"></div>
   </section>
 
-  <section class="players-bar" id="players-bar">
-  </section>
+  <section class="players-bar" id="players-bar"></section>
 </main>
 
 <dialog id="modal">
@@ -105,12 +99,12 @@
 
 <dialog id="help">
   <h2>📘 Aide</h2>
-  <p><b>But du jeu</b> : Atteindre la case finale (63) en premier. On avance selon le lancer de dé(s) et on applique l'effet de la case d'arrivée.</p>
-  <p><b>Cases</b> : certaines cases font avancer/reculer, rejouer, sauter un tour, etc. C'est configurable via un fichier CSV/JSON.</p>
+  <p><b>But</b> : Atteindre la case finale (63) en premier. Avance selon le lancer et applique l'effet de la case.</p>
   <ul>
-    <li><b>Importer plateau</b> : un CSV avec colonnes <code>index,label,type,valeur</code>.</li>
-    <li><b>Importer joueurs</b> : un CSV avec colonnes <code>nom,couleur</code> (couleur facultative).</li>
-    <li><b>Sauvegarde</b> : export/import d'une partie (JSON).</li>
+    <li><b>Importer plateau</b> CSV colonnes : <code>index,label,type,valeur</code>.</li>
+    <li>Types : <code>advance</code>, <code>back</code>, <code>skip</code>, <code>roll_again</code>, <code>teleport</code>.</li>
+    <li><b>Importer joueurs</b> CSV : <code>nom,couleur</code> (couleur optionnelle).</li>
+    <li><b>Sauvegarde</b> : export/import JSON + sauvegarde locale.</li>
   </ul>
   <div class="row end gap">
     <button id="help-close" class="btn primary">Fermer</button>

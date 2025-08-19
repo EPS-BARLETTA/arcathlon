@@ -1,19 +1,17 @@
-// Minimal multiplayer 'Jeu de l'Oie' – no backend, works on GitHub Pages
+// Arcathlon – Jeu de l'Oie (Multijoueurs local) – GitHub Pages compatible
 (() => {
   const $ = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-  /* ---------- State ---------- */
   const state = {
-    board: [],         // [{ index, label, type, value } ...]
-    players: [],       // [{ id, name, color, pos, skip } ...]
-    turn: 0,           // index in players
-    dice: 2,           // 1 or 2
+    board: [],
+    players: [],
+    turn: 0,
+    dice: 2,
     finished: false,
     zoom: 1
   };
 
-  /* ---------- Helpers ---------- */
   const randColor = () => `hsl(${Math.floor(Math.random()*360)},85%,60%)`;
 
   function toast(msg){
@@ -21,71 +19,55 @@
     $("#modal-content").innerHTML = `<p>${msg}</p>`;
     dlg.showModal();
   }
-
-  function saveToLocal(){
-    const payload = JSON.stringify(state);
-    localStorage.setItem("oie-save", payload);
-  }
+  function saveToLocal(){ localStorage.setItem("arcathlon-save", JSON.stringify(state)); }
   function loadFromLocal(){
-    const raw = localStorage.getItem("oie-save");
-    if(!raw) return false;
-    try{
-      const parsed = JSON.parse(raw);
-      Object.assign(state, parsed);
-      return true;
-    }catch(e){ console.error(e); return false; }
+    const raw = localStorage.getItem("arcathlon-save"); if(!raw) return false;
+    try{ Object.assign(state, JSON.parse(raw)); return true; }catch(e){ console.error(e); return false; }
   }
   function download(filename, content, type="application/json"){
-    const blob = new Blob([content], {type});
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    a.href = URL.createObjectURL(new Blob([content], {type}));
+    a.download = filename; a.click(); URL.revokeObjectURL(a.href);
   }
-
   function parseCSV(text){
-    // simple CSV parser supporting ; or , as separators
     const sep = text.includes(";") && !text.includes(",") ? ";" : ",";
     const lines = text.trim().split(/\r?\n/);
     const headers = lines.shift().split(sep).map(h => h.trim().toLowerCase());
     return lines.map(line => {
       const cols = line.split(sep).map(c => c.trim());
-      const obj = {};
-      headers.forEach((h,i)=> obj[h] = cols[i]);
+      const obj = {}; headers.forEach((h,i)=> obj[h] = cols[i]);
       return obj;
     });
   }
 
   function applyEffect(player, square){
     switch(square.type){
-      case "advance":
-        player.pos = Math.min(player.pos + Number(square.value||0), state.board.length-1);
+      case "advance": player.pos = Math.min(player.pos + Number(square.value||0), state.board.length-1);
         return `➡️ ${player.name} avance de ${square.value} case(s).`;
-      case "back":
-        player.pos = Math.max(player.pos - Number(square.value||0), 0);
+      case "back": player.pos = Math.max(player.pos - Number(square.value||0), 0);
         return `⬅️ ${player.name} recule de ${square.value} case(s).`;
-      case "skip":
-        player.skip = 1;
-        return `⏭️ ${player.name} passera son prochain tour.`;
-      case "roll_again":
-        // handled by game loop; here just message
-        return `🎲 ${player.name} relance immédiatement !`;
+      case "skip": player.skip = 1; return `⏭️ ${player.name} passera son prochain tour.`;
+      case "roll_again": return `🎲 ${player.name} relance immédiatement !`;
       case "teleport":
         const dest = Math.max(0, Math.min(Number(square.value||0), state.board.length-1));
-        player.pos = dest;
-        return `🌀 ${player.name} est téléporté à la case ${dest}.`;
-      default:
-        return ""; // nothing
+        player.pos = dest; return `🌀 ${player.name} est téléporté à la case ${dest}.`;
+      default: return "";
     }
   }
 
-  /* ---------- UI: Setup Screen ---------- */
+  // ---------- Setup Screen ----------
+  const playersWrap = document.getElementById("players-list");
+  playersWrap.addEventListener("input", (ev) => {
+    const i = Number(ev.target.dataset.i);
+    if (Number.isNaN(i)) return;
+    if (ev.target.type === "text") { state.players[i].name = ev.target.value; }
+    if (ev.target.type === "color") { state.players[i].color = ev.target.value; renderSetupPlayers(); }
+  });
+
   function renderSetupPlayers(){
     const count = Math.max(2, Math.min(8, Number($("#player-count").value||2)));
-    const wrap = $("#players-list");
+    const wrap = playersWrap;
     wrap.innerHTML = "";
-    // ensure state players length
     while(state.players.length < count){
       const id = state.players.length;
       state.players.push({ id, name:`Joueur ${id+1}`, color: randColor(), pos:0, skip:0 });
@@ -102,17 +84,10 @@
       `;
       wrap.appendChild(item);
     });
-    wrap.addEventListener("input", (ev)=>{
-      const i = Number(ev.target.dataset.i);
-      if(Number.isNaN(i)) return;
-      if(ev.target.type === "text"){ state.players[i].name = ev.target.value; }
-      if(ev.target.type === "color"){ state.players[i].color = ev.target.value; renderSetupPlayers(); }
-    }, {once:false});
   }
 
   function rgbToHex(input){
     if(input.startsWith("#")) return input;
-    // parse hsl(h,s%,l%)
     if(input.startsWith("hsl")){
       const m = input.match(/hsl\((\d+),\s*([\d.]+)%?,\s*([\d.]+)%?\)/i);
       if(m){
@@ -135,9 +110,16 @@
   }
 
   async function loadBoardFrom(url){
-    const res = await fetch(url);
-    const json = await res.json();
-    state.board = json;
+    try{
+      const res = await fetch(url, {cache:"no-store"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const json = await res.json();
+      state.board = normalizeBoard(json);
+    }catch(e){
+      console.warn("Fetch board failed, using fallback:", e);
+      state.board = defaultBoard();
+      toast("Plateau par défaut chargé (fichier introuvable).");
+    }
   }
 
   function importBoardFromFile(file){
@@ -166,7 +148,6 @@
   }
 
   function normalizeBoard(arr){
-    // Ensure 0..N-1 and has label/type/value
     const maxIndex = arr.reduce((m, r) => Math.max(m, Number(r.index||0)), 0);
     const out = [];
     for(let i=0;i<=maxIndex;i++){
@@ -181,15 +162,36 @@
         value: Number(r.value || r.valeur || 0)
       };
     }
-    // ensure finish is last
     out[out.length-1].label = out[out.length-1].label || "Arrivée";
     return out;
   }
 
-  /* ---------- UI: Game Screen ---------- */
+  function defaultBoard(){
+    const N = 63;
+    const specials = {
+      3:["advance",2,"Pont +2"], 6:["advance",2,"Oie +2"], 9:["roll_again",0,"Rejoue"],
+      12:["back",2,"Glissade -2"], 14:["advance",3,"Turbo +3"], 18:["skip",1,"Passe 1 tour"],
+      19:["teleport",6,"Retour #6"], 23:["advance",2,"Oie +2"], 26:["back",3,"Ornière -3"],
+      27:["roll_again",0,"Rejoue"], 31:["advance",2,"Oie +2"], 36:["skip",1,"Passe 1 tour"],
+      40:["advance",3,"Turbo +3"], 42:["back",2,"Boulet -2"], 45:["roll_again",0,"Rejoue"],
+      50:["advance",2,"Oie +2"], 54:["back",4,"Tempête -4"], 57:["skip",1,"Passe 1 tour"],
+      59:["advance",2,"Oie +2"]
+    };
+    const board = [];
+    for(let i=0;i<=N;i++){
+      if(i===0) board.push({index:i,label:"Départ",type:"",value:0});
+      else if(i===N) board.push({index:i,label:"Arrivée 🎯",type:"",value:0});
+      else if(specials[i]){
+        const [t,v,name] = specials[i];
+        board.push({index:i,label:name,type:t,value:v});
+      }else board.push({index:i,label:"",type:"",value:0});
+    }
+    return board;
+  }
+
+  // ---------- Game UI ----------
   function renderBoard(){
-    const board = $("#board");
-    board.innerHTML = "";
+    const el = $("#board"); el.innerHTML = "";
     state.board.forEach((sq, i) => {
       const d = document.createElement("div");
       d.className = "square";
@@ -199,117 +201,59 @@
       if(sq.type === "skip") d.classList.add("effect-skip");
       if(sq.type === "roll_again") d.classList.add("effect-roll");
       d.innerHTML = `<div class="idx">#${i}</div><div>${sq.label || ""}</div><div class="token" id="t-${i}"></div>`;
-      board.appendChild(d);
+      el.appendChild(d);
     });
-    // place tokens
     state.players.forEach(p => placeToken(p));
   }
 
   function renderPlayersBar(){
-    const bar = $("#players-bar");
-    bar.innerHTML = "";
+    const bar = $("#players-bar"); bar.innerHTML = "";
     state.players.forEach((p,i) => {
       const card = document.createElement("div");
       card.className = "player-card"+(i===state.turn ? " turn" : "");
       card.style.borderLeftColor = p.color;
-      card.innerHTML = `
-        <div class="name">${p.name}</div>
-        <div class="meta">Position: ${p.pos} / ${state.board.length-1} ${p.skip? " • ⏭️ Tour sauté":" "}</div>
-      `;
+      card.innerHTML = `<div class="name">${p.name}</div><div class="meta">Position: ${p.pos} / ${state.board.length-1} ${p.skip? " • ⏭️ Tour sauté":""}</div>`;
       bar.appendChild(card);
     });
     $("#turn-name").textContent = state.players[state.turn]?.name || "—";
   }
 
   function placeToken(p){
-    const container = $(`#t-${p.pos}`);
-    if(!container) return;
-    const dot = document.createElement("div");
-    dot.className = "p";
-    dot.style.background = p.color;
-    dot.title = p.name;
+    const container = $(`#t-${p.pos}`); if(!container) return;
+    const dot = document.createElement("div"); dot.className = "p"; dot.style.background = p.color; dot.title = p.name;
     container.appendChild(dot);
-    // autoscroll into view
     container.parentElement.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
   }
 
-  function nextTurn(){
-    state.turn = (state.turn + 1) % state.players.length;
-    renderPlayersBar();
-  }
-
+  function nextTurn(){ state.turn = (state.turn + 1) % state.players.length; renderPlayersBar(); }
   function rollDice(){
     const dice = Number($("#dice-count").value || state.dice);
     const roll = () => 1 + Math.floor(Math.random()*6);
-    const r1 = roll();
-    const r2 = dice === 2 ? roll() : 0;
-    const sum = dice === 2 ? r1 + r2 : r1;
+    const r1 = roll(), r2 = dice===2 ? roll() : 0, sum = dice===2 ? r1+r2 : r1;
     $("#dice-result").textContent = dice===2 ? `${r1} + ${r2} = ${sum}` : `${r1}`;
-    return {r1, r2, sum};
+    return {r1,r2,sum};
   }
 
   function gameStep(){
-    const current = state.players[state.turn];
-    if(!current) return;
-
-    if(state.finished) return;
-
-    if(current.skip){
-      toast(`⏭️ ${current.name} saute son tour.`);
-      current.skip = 0;
-      renderPlayersBar();
-      nextTurn();
-      saveToLocal();
-      return;
-    }
-
+    const current = state.players[state.turn]; if(!current || state.finished) return;
+    if(current.skip){ toast(`⏭️ ${current.name} saute son tour.`); current.skip = 0; renderPlayersBar(); nextTurn(); saveToLocal(); return; }
     const { sum } = rollDice();
-    // move
     current.pos = Math.min(current.pos + sum, state.board.length-1);
-    renderBoard();
-    renderPlayersBar();
-
+    renderBoard(); renderPlayersBar();
     const arrived = state.board[current.pos];
     let msg = `${current.name} avance de ${sum} case(s) et arrive sur #${current.pos} – ${arrived.label || "case neutre"}.`;
     const effectMsg = applyEffect(current, arrived);
     if(effectMsg) msg += "<br>"+effectMsg;
-
-    renderBoard();
-    renderPlayersBar();
-
-    // Win?
-    if(current.pos >= state.board.length-1){
-      state.finished = true;
-      toast(`🏆 ${current.name} a gagné !`);
-      saveToLocal();
-      return;
-    }
-
-    // Roll again?
-    if(arrived.type === "roll_again"){
-      toast(msg + "<br><b>Relance immédiate !</b>");
-      saveToLocal();
-      return; // same player plays again
-    }else{
-      toast(msg);
-      nextTurn();
-      saveToLocal();
-    }
+    renderBoard(); renderPlayersBar();
+    if(current.pos >= state.board.length-1){ state.finished = true; toast(`🏆 ${current.name} a gagné !`); saveToLocal(); return; }
+    if(arrived.type === "roll_again"){ toast(msg + "<br><b>Relance immédiate !</b>"); saveToLocal(); return; }
+    toast(msg); nextTurn(); saveToLocal();
   }
 
-  /* ---------- Screens & Events ---------- */
-  function show(id){
-    for(const s of $$(".screen")) s.classList.remove("active");
-    $(id).classList.add("active");
-  }
-
-  // Setup
+  // ---------- Events ----------
   $("#player-count").addEventListener("input", renderSetupPlayers);
   $("#dice-count").addEventListener("change", e => state.dice = Number(e.target.value));
-  $("#btn-colors").addEventListener("click", () => {
-    state.players.forEach(p => p.color = randColor());
-    renderSetupPlayers();
-  });
+  $("#btn-colors").addEventListener("click", () => { state.players.forEach(p => p.color = randColor()); renderSetupPlayers(); });
   $("#import-players").addEventListener("change", (e) => {
     const f = e.target.files[0]; if(!f) return;
     const reader = new FileReader();
@@ -317,63 +261,31 @@
       const rows = parseCSV(reader.result);
       state.players = rows.map((r,i) => ({
         id:i, name: r.nom || r.name || `Joueur ${i+1}`,
-        color: r.couleur || r.color || randColor(),
-        pos:0, skip:0
+        color: r.couleur || r.color || randColor(), pos:0, skip:0
       }));
-      $("#player-count").value = state.players.length;
-      renderSetupPlayers();
+      $("#player-count").value = state.players.length; renderSetupPlayers();
     };
     reader.readAsText(f, "utf-8");
   });
-
-  $("#import-board").addEventListener("change", (e) => {
-    const f = e.target.files[0]; if(!f) return;
-    importBoardFromFile(f);
-  });
-
+  $("#import-board").addEventListener("change", (e) => { const f = e.target.files[0]; if(!f) return; importBoardFromFile(f); });
   $("#btn-start").addEventListener("click", async () => {
-    // load default board if none loaded
     if(state.board.length === 0) await loadBoardFrom($("#board-select").value);
-    // clamp players
     state.players = state.players.slice(0, Math.max(2, Math.min(8, state.players.length)));
-    state.players.forEach(p => { p.pos = 0; p.skip = 0; });
+    state.players.forEach(p => { p.pos=0; p.skip=0; });
     state.turn = 0; state.finished = false;
-    renderBoard();
-    renderPlayersBar();
-    show("#screen-game");
-    saveToLocal();
+    renderBoard(); renderPlayersBar(); show("#screen-game"); saveToLocal();
   });
-
   $("#btn-new").addEventListener("click", () => {
-    localStorage.removeItem("oie-save");
-    // reset setup defaults
-    state.players = [];
-    $("#player-count").value = 2;
-    $("#dice-count").value = String(state.dice || 2);
-    renderSetupPlayers();
-    show("#screen-setup");
+    localStorage.removeItem("arcathlon-save");
+    state.players = []; $("#player-count").value = 2; $("#dice-count").value = String(state.dice || 2);
+    renderSetupPlayers(); show("#screen-setup");
   });
-
-  $("#btn-resume").addEventListener("click", async () => {
-    if(loadFromLocal()){
-      renderBoard(); renderPlayersBar(); show("#screen-game");
-    }else{
-      toast("Aucune sauvegarde locale trouvée.");
-    }
-  });
-
-  $("#btn-export").addEventListener("click", () => {
-    download("oie-sauvegarde.json", JSON.stringify(state, null, 2));
-  });
-  $("#btn-save").addEventListener("click", () => {
-    saveToLocal(); toast("Sauvegardé localement (navigateur).");
-  });
+  $("#btn-resume").addEventListener("click", () => { if(loadFromLocal()){ renderBoard(); renderPlayersBar(); show("#screen-game"); } else toast("Aucune sauvegarde locale trouvée."); });
+  $("#btn-export").addEventListener("click", () => download("arcathlon-sauvegarde.json", JSON.stringify(state, null, 2)));
+  $("#btn-save").addEventListener("click", () => { saveToLocal(); toast("Sauvegardé localement (navigateur)."); });
   $("#btn-reset").addEventListener("click", () => {
-    if(confirm("Réinitialiser la partie ?")){
-      state.players.forEach(p => { p.pos=0; p.skip=0; });
-      state.turn=0; state.finished=false;
-      renderBoard(); renderPlayersBar(); saveToLocal();
-    }
+    if(confirm("Réinitialiser la partie ?")){ state.players.forEach(p => { p.pos=0; p.skip=0; });
+      state.turn=0; state.finished=false; renderBoard(); renderPlayersBar(); saveToLocal(); }
   });
   $("#btn-home").addEventListener("click", () => show("#screen-setup"));
   $("#btn-roll").addEventListener("click", gameStep);
@@ -382,34 +294,24 @@
     $("#board").style.transform = `scale(${state.zoom})`;
     $("#board").style.transformOrigin = "left center";
   });
-
   $("#import-save").addEventListener("change", (e) => {
     const f = e.target.files[0]; if(!f) return;
     const reader = new FileReader();
     reader.onload = () => {
-      try{
-        const parsed = JSON.parse(reader.result);
-        Object.assign(state, parsed);
-        renderBoard(); renderPlayersBar();
-        show("#screen-game");
-        saveToLocal();
-      }catch(e){ toast("Sauvegarde invalide."); }
+      try{ Object.assign(state, JSON.parse(reader.result)); renderBoard(); renderPlayersBar(); show("#screen-game"); saveToLocal(); }
+      catch(e){ toast("Sauvegarde invalide."); }
     };
     reader.readAsText(f, "utf-8");
   });
-
   $("#btn-help").addEventListener("click", () => $("#help").showModal());
   $("#help-close").addEventListener("click", () => $("#help").close());
   $("#modal-close").addEventListener("click", () => $("#modal").close());
 
+  function show(id){ $$(".screen").forEach(s=>s.classList.remove("active")); $(id).classList.add("active"); }
+
   // init
-  (async function init(){
+  (function init(){
     $("#dice-count").value = "2";
     renderSetupPlayers();
-    try{
-      // preload board list (only default here)
-      // load nothing; wait for start
-    }catch(e){ console.error(e); }
   })();
-
 })();
