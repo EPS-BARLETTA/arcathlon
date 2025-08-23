@@ -3,179 +3,64 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale v3.4 (Double Vue)</title>
+  <title>Arcathlon – Spirale v3.5 (Double Vue simple)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale v3.4</h1>
+  <h1>🏹 Arcathlon Spirale v3.5</h1>
   <nav class="nav-actions">
-    <button id="nav-points" class="btn tab active">📊 Vue Points</button>
-    <button id="nav-board" class="btn tab">🌀 Vue Échiquier</button>
-    <span class="sep"></span>
-    <label class="switch">
-      <input type="checkbox" id="cine-auto" checked>
-      <span>🎬 Ciné-mode auto</span>
-    </label>
-    <label class="switch">
-      <input type="checkbox" id="toggle-strat" checked>
-      <span>🧭 Vue stratégique</span>
-    </label>
-    <button id="btn-bilan" class="btn">QR Bilan</button>
-    <button id="btn-new" class="btn primary">Nouvelle partie</button>
-    <button id="btn-resume" class="btn">Reprendre</button>
-    <button id="btn-export" class="btn">Exporter sauvegarde</button>
-    <label class="file-btn">
-      Importer sauvegarde
-      <input type="file" id="import-save" accept=".json,application/json">
-    </label>
-    <button id="btn-help" class="btn ghost">Aide</button>
+    <button id="tab-input" class="btn tab active">📋 Vue Saisie</button>
+    <button id="tab-board" class="btn tab">🌀 Vue Échiquier</button>
   </nav>
 </header>
 
-<main id="view-points" class="screen active">
+<main id="view-input" class="screen active">
   <section class="card">
-    <h2>Paramètres (2 contre 2)</h2>
-    <div class="grid-2">
-      <div class="team-card" style="--team:#5ac8fa">
-        <h3>Équipe A</h3>
-        <label>Nom d'équipe</label>
-        <input id="teamA-name" type="text" value="Équipe A">
-        <label>Joueur A1</label>
-        <input id="teamA-p1" type="text" value="A1">
-        <label>Joueur A2</label>
-        <input id="teamA-p2" type="text" value="A2">
-        <label>Couleur</label>
-        <input id="teamA-color" type="color" value="#5ac8fa">
-      </div>
-      <div class="team-card" style="--team:#ff7b7b">
-        <h3>Équipe B</h3>
-        <label>Nom d'équipe</label>
-        <input id="teamB-name" type="text" value="Équipe B">
-        <label>Joueur B1</label>
-        <input id="teamB-p1" type="text" value="B1">
-        <label>Joueur B2</label>
-        <input id="teamB-p2" type="text" value="B2">
-        <label>Couleur</label>
-        <input id="teamB-color" type="color" value="#ff7b7b">
-      </div>
+    <h2>2 contre 2 — Saisie des tirs (0, 6, 7, 8, 9, 10)</h2>
+    <table class="score-table" aria-label="Saisie des flèches">
+      <thead>
+        <tr>
+          <th>Équipe</th>
+          <th>Tireur</th>
+          <th>Flèche 1</th>
+          <th>Flèche 2</th>
+          <th>Flèche 3</th>
+          <th>Meilleur</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-scores"></tbody>
+      <tfoot>
+        <tr class="team-total"><td colspan="5">Total équipe A (meilleur A1 + A2)</td><td id="totalA">0</td></tr>
+        <tr class="team-total"><td colspan="5">Total équipe B (meilleur B1 + B2)</td><td id="totalB">0</td></tr>
+      </tfoot>
+    </table>
+    <div class="row gap end">
+      <button id="btn-calc" class="btn">Calculer</button>
+      <button id="btn-validate" class="btn primary">Valider le tour ▶</button>
+      <button id="btn-undo" class="btn ghost">Annuler</button>
     </div>
-    <div class="row end">
-      <button id="btn-start" class="btn primary large">Démarrer ▶</button>
-    </div>
-  </section>
-
-  <section class="grid-2">
-    <section class="panel card">
-      <div class="round-box">Tour <span id="round-no">1</span></div>
-
-      <div class="team-score" data-team="A">
-        <h3 id="nameA">Équipe A</h3>
-        <div class="debuff" id="A-debuff" hidden>⚠️ 2 flèches par tireur au prochain tour.</div>
-        <div class="archer" id="A1"></div>
-        <div class="archer" id="A2"></div>
-        <div class="total">Score équipe (tour): <span id="A-total">0</span> — <span class="badge">Cumul: <span id="A-cumul">0</span></span></div>
-      </div>
-
-      <div class="team-score" data-team="B">
-        <h3 id="nameB">Équipe B</h3>
-        <div class="debuff" id="B-debuff" hidden>⚠️ 2 flèches par tireur au prochain tour.</div>
-        <div class="archer" id="B1"></div>
-        <div class="archer" id="B2"></div>
-        <div class="total">Score équipe (tour): <span id="B-total">0</span> — <span class="badge">Cumul: <span id="B-cumul">0</span></span></div>
-      </div>
-
-      <div class="row gap wrap">
-        <button id="btn-calc" class="btn">Calculer</button>
-        <button id="btn-validate" class="btn primary">Valider le tour</button>
-        <button id="btn-undo" class="btn ghost">Annuler (animé)</button>
-        <button id="btn-save" class="btn">💾 Sauvegarder</button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3>🧭 Stratégie (suggestions textuelles)</h3>
-      <div class="grid-2">
-        <div>
-          <h4>Recommandations (A)</h4>
-          <ul id="strat-A" class="strategy-list"></ul>
-        </div>
-        <div>
-          <h4>Recommandations (B)</h4>
-          <ul id="strat-B" class="strategy-list"></ul>
-        </div>
-      </div>
-      <hr class="sep-hr">
-      <h4>Table des sommes possibles (0,6,7,8,9,10)</h4>
-      <div id="sum-table" class="sum-table"></div>
-      <p class="muted">Astuce : bascule en “Vue Échiquier” pour voir les **cibles** directement sur le plateau.</p>
-    </section>
   </section>
 </main>
 
 <main id="view-board" class="screen">
-  <section class="layout-board">
-    <section class="board-wrap" id="board-wrap">
-      <div class="board-bg"></div>
-      <svg id="board" viewBox="0 0 1200 1200" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
-      <div id="fx-layer"></div>
-      <div class="legend">
-        <span class="chip bonus">Bonus</span>
-        <span class="chip malus">Malus</span>
-        <span class="chip skip">Saut 1 tour</span>
-        <span class="chip mystery">Mystère</span>
-        <span class="chip teleport">Téléport</span>
-        <span class="chip goal">Objectif</span>
-        <span class="chip steal">Vole 1 flèche</span>
-      </div>
-      <div id="hud" class="hud" hidden>
-        <div id="hud-text"></div>
-        <button id="exit-cine" class="btn ghost small">Quitter</button>
-      </div>
-      <div id="minimap" class="minimap"></div>
-    </section>
-    <aside class="sidecard card">
-      <h3>🧭 Vue stratégique (visuelle)</h3>
-      <p class="muted">Cercles = cases atteignables ce tour. Le chiffre = avance à réaliser.</p>
-      <ul id="strategy-list" class="strategy-list"></ul>
-    </aside>
+  <section class="board-wrap">
+    <div class="board-bg"></div>
+    <svg id="board" viewBox="0 0 1400 1400" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+    <div class="legend">
+      <span class="chip bonus">Bonus</span>
+      <span class="chip malus">Malus</span>
+      <span class="chip skip">Saut 1 tour</span>
+      <span class="chip mystery">Mystère</span>
+      <span class="chip teleport">Téléport</span>
+      <span class="chip goal">Objectif</span>
+      <span class="chip steal">Vole 1 flèche</span>
+    </div>
+    <div id="hud" class="hud" hidden><div id="hud-text"></div></div>
   </section>
 </main>
 
-<dialog id="qr-bilan">
-  <h3>QR “Bilan” compatible ScanProf</h3>
-  <p style="color:#aab4cc;font-size:13px;margin-top:-6px">Deux formats : <b>Arcathlon (points)</b> et <b>ScanProf v4 (distances/temps)</b>.</p>
-  <div class="grid-2">
-    <div>
-      <label>Classe</label>
-      <input id="qr-classe" type="text" placeholder="ex: 5eB">
-    </div>
-    <div>
-      <label>Sexe (M/F)</label>
-      <select id="qr-sexe"><option value="F">F</option><option value="M">M</option></select>
-    </div>
-  </div>
-  <div class="row gap" style="margin-top:8px">
-    <label><input type="radio" name="qr-mode" value="points" checked> Format Arcathlon (points + vainqueur)</label>
-    <label><input type="radio" name="qr-mode" value="v4"> Format ScanProf v4 (distances/temps)</label>
-  </div>
-  <div id="qr-view" class="qr-view">
-    <div class="qr-wrap-white"><div id="qr-slot"></div></div>
-    <div class="qr-preview">
-      <div class="label">JSON encodé</div>
-      <pre id="qr-json" class="monopre"></pre>
-    </div>
-  </div>
-  <div class="row gap wrap end" style="margin-top:8px">
-    <button id="qr-refresh" class="btn">Régénérer</button>
-    <button id="qr-download" class="btn primary">Télécharger PNG</button>
-    <button id="qr-close" class="btn ghost">Fermer</button>
-  </div>
-</dialog>
-
 <dialog id="modal"><div id="modal-content"></div><div class="row end gap"><button id="modal-close" class="btn primary">OK</button></div></dialog>
-<dialog id="help"><h2>📘 Aide</h2><p>Utilise les deux vues pour décider, puis valide le tour.</p><div class="row end gap"><button id="help-close" class="btn primary">Fermer</button></div></dialog>
-
 <script src="app.js"></script>
 </body>
 </html>
