@@ -3,16 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale v3.2</title>
+  <title>Arcathlon – Spirale v3.4 (Double Vue)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale v3.2</h1>
-  <nav>
+  <h1>🏹 Arcathlon Spirale v3.4</h1>
+  <nav class="nav-actions">
+    <button id="nav-points" class="btn tab active">📊 Vue Points</button>
+    <button id="nav-board" class="btn tab">🌀 Vue Échiquier</button>
+    <span class="sep"></span>
     <label class="switch">
-      <input type="checkbox" id="cine-auto">
+      <input type="checkbox" id="cine-auto" checked>
       <span>🎬 Ciné-mode auto</span>
+    </label>
+    <label class="switch">
+      <input type="checkbox" id="toggle-strat" checked>
+      <span>🧭 Vue stratégique</span>
     </label>
     <button id="btn-bilan" class="btn">QR Bilan</button>
     <button id="btn-new" class="btn primary">Nouvelle partie</button>
@@ -26,7 +33,7 @@
   </nav>
 </header>
 
-<main id="screen-setup" class="screen active">
+<main id="view-points" class="screen active">
   <section class="card">
     <h2>Paramètres (2 contre 2)</h2>
     <div class="grid-2">
@@ -58,21 +65,13 @@
     </div>
   </section>
 
-  <section class="card">
-    <h3>Principe du score</h3>
-    <p>Chaque flèche vaut : <b>0</b>, <b>6</b>, <b>7</b>, <b>8</b>, <b>9</b> ou <b>10</b>. On garde la meilleure par tireur.<br>
-    Le binôme avance de la <b>somme</b> des deux meilleures.</p>
-  </section>
-</main>
-
-<main id="screen-game" class="screen">
-  <section class="layout">
-    <aside class="panel">
+  <section class="grid-2">
+    <section class="panel card">
       <div class="round-box">Tour <span id="round-no">1</span></div>
 
       <div class="team-score" data-team="A">
         <h3 id="nameA">Équipe A</h3>
-        <div class="debuff" id="A-debuff" hidden>⚠️ Cette équipe n’aura que <b>2 flèches</b> par tireur au prochain tour.</div>
+        <div class="debuff" id="A-debuff" hidden>⚠️ 2 flèches par tireur au prochain tour.</div>
         <div class="archer" id="A1"></div>
         <div class="archer" id="A2"></div>
         <div class="total">Score équipe (tour): <span id="A-total">0</span> — <span class="badge">Cumul: <span id="A-cumul">0</span></span></div>
@@ -80,7 +79,7 @@
 
       <div class="team-score" data-team="B">
         <h3 id="nameB">Équipe B</h3>
-        <div class="debuff" id="B-debuff" hidden>⚠️ Cette équipe n’aura que <b>2 flèches</b> par tireur au prochain tour.</div>
+        <div class="debuff" id="B-debuff" hidden>⚠️ 2 flèches par tireur au prochain tour.</div>
         <div class="archer" id="B1"></div>
         <div class="archer" id="B2"></div>
         <div class="total">Score équipe (tour): <span id="B-total">0</span> — <span class="badge">Cumul: <span id="B-cumul">0</span></span></div>
@@ -92,10 +91,33 @@
         <button id="btn-undo" class="btn ghost">Annuler (animé)</button>
         <button id="btn-save" class="btn">💾 Sauvegarder</button>
       </div>
-    </aside>
+    </section>
 
+    <section class="card">
+      <h3>🧭 Stratégie (suggestions textuelles)</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Recommandations (A)</h4>
+          <ul id="strat-A" class="strategy-list"></ul>
+        </div>
+        <div>
+          <h4>Recommandations (B)</h4>
+          <ul id="strat-B" class="strategy-list"></ul>
+        </div>
+      </div>
+      <hr class="sep-hr">
+      <h4>Table des sommes possibles (0,6,7,8,9,10)</h4>
+      <div id="sum-table" class="sum-table"></div>
+      <p class="muted">Astuce : bascule en “Vue Échiquier” pour voir les **cibles** directement sur le plateau.</p>
+    </section>
+  </section>
+</main>
+
+<main id="view-board" class="screen">
+  <section class="layout-board">
     <section class="board-wrap" id="board-wrap">
-      <svg id="board" viewBox="0 0 1000 1000" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+      <div class="board-bg"></div>
+      <svg id="board" viewBox="0 0 1200 1200" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
       <div id="fx-layer"></div>
       <div class="legend">
         <span class="chip bonus">Bonus</span>
@@ -110,25 +132,27 @@
         <div id="hud-text"></div>
         <button id="exit-cine" class="btn ghost small">Quitter</button>
       </div>
+      <div id="minimap" class="minimap"></div>
     </section>
+    <aside class="sidecard card">
+      <h3>🧭 Vue stratégique (visuelle)</h3>
+      <p class="muted">Cercles = cases atteignables ce tour. Le chiffre = avance à réaliser.</p>
+      <ul id="strategy-list" class="strategy-list"></ul>
+    </aside>
   </section>
 </main>
 
-<!-- QR Bilan overlay (ScanProf-style) -->
 <dialog id="qr-bilan">
   <h3>QR “Bilan” compatible ScanProf</h3>
-  <p style="color:#aab4cc;font-size:13px;margin-top:-6px">Deux formats disponibles : <b>Arcathlon (points)</b> et <b>ScanProf v4 (distances/temps)</b>.</p>
+  <p style="color:#aab4cc;font-size:13px;margin-top:-6px">Deux formats : <b>Arcathlon (points)</b> et <b>ScanProf v4 (distances/temps)</b>.</p>
   <div class="grid-2">
     <div>
       <label>Classe</label>
       <input id="qr-classe" type="text" placeholder="ex: 5eB">
     </div>
     <div>
-      <label>Sexe (ScanProf exige M ou F)</label>
-      <select id="qr-sexe">
-        <option value="F">F</option>
-        <option value="M">M</option>
-      </select>
+      <label>Sexe (M/F)</label>
+      <select id="qr-sexe"><option value="F">F</option><option value="M">M</option></select>
     </div>
   </div>
   <div class="row gap" style="margin-top:8px">
@@ -149,26 +173,8 @@
   </div>
 </dialog>
 
-<dialog id="modal">
-  <div id="modal-content"></div>
-  <div class="row end gap">
-    <button id="modal-close" class="btn primary">OK</button>
-  </div>
-</dialog>
-
-<dialog id="help">
-  <h2>📘 Aide (EPS)</h2>
-  <ul>
-    <li>Flèches autorisées : 0, 6, 7, 8, 9, 10 (sélection par puces).</li>
-    <li>Somme des 2 meilleures → avance du binôme.</li>
-    <li>Cases “Objectif” (ex. +4 / → +10 / Rejouer / Vole 1 flèche) + cases mystères révélées à l’arrivée.</li>
-    <li>🎬 <b>Ciné-mode</b> : plein écran auto pendant les déplacements.</li>
-    <li>🧾 <b>QR Bilan</b> : synthèse scannable par ScanProf (points ou format v4).</li>
-  </ul>
-  <div class="row end gap">
-    <button id="help-close" class="btn primary">Fermer</button>
-  </div>
-</dialog>
+<dialog id="modal"><div id="modal-content"></div><div class="row end gap"><button id="modal-close" class="btn primary">OK</button></div></dialog>
+<dialog id="help"><h2>📘 Aide</h2><p>Utilise les deux vues pour décider, puis valide le tour.</p><div class="row end gap"><button id="help-close" class="btn primary">Fermer</button></div></dialog>
 
 <script src="app.js"></script>
 </body>
