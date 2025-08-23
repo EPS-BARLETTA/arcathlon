@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale v3.5 (Double Vue simple)</title>
+  <title>Arcathlon – Spirale v3.6 (Auto-calcul + Oies)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale v3.5</h1>
+  <h1>🏹 Arcathlon Spirale v3.6</h1>
   <nav class="nav-actions">
     <button id="tab-input" class="btn tab active">📋 Vue Saisie</button>
     <button id="tab-board" class="btn tab">🌀 Vue Échiquier</button>
@@ -18,6 +18,7 @@
 <main id="view-input" class="screen active">
   <section class="card">
     <h2>2 contre 2 — Saisie des tirs (0, 6, 7, 8, 9, 10)</h2>
+    <div class="row gap wrap" id="notices"></div>
     <table class="score-table" aria-label="Saisie des flèches">
       <thead>
         <tr>
@@ -36,7 +37,6 @@
       </tfoot>
     </table>
     <div class="row gap end">
-      <button id="btn-calc" class="btn">Calculer</button>
       <button id="btn-validate" class="btn primary">Valider le tour ▶</button>
       <button id="btn-undo" class="btn ghost">Annuler</button>
     </div>
@@ -46,15 +46,23 @@
 <main id="view-board" class="screen">
   <section class="board-wrap">
     <div class="board-bg"></div>
-    <svg id="board" viewBox="0 0 1400 1400" class="board-svg" role="img" aria-label="Plateau en spirale"></svg>
+    <svg id="board" viewBox="0 0 1800 1800" class="board-svg" role="img" aria-label="Plateau en spirale extérieur → intérieur"></svg>
     <div class="legend">
-      <span class="chip bonus">Bonus</span>
-      <span class="chip malus">Malus</span>
-      <span class="chip skip">Saut 1 tour</span>
-      <span class="chip mystery">Mystère</span>
-      <span class="chip teleport">Téléport</span>
-      <span class="chip goal">Objectif</span>
+      <span class="chip bonus2">+2</span>
+      <span class="chip bonus4">+4</span>
+      <span class="chip bonus6">+6</span>
+      <span class="chip bonus8">+8</span>
+      <span class="chip malus2">-2</span>
+      <span class="chip malus4">-4</span>
+      <span class="chip malus6">-6</span>
+      <span class="chip malus8">-8</span>
+      <span class="chip neutral1">-1 flèche</span>
+      <span class="chip neutral2">-2 flèches</span>
+      <span class="chip neutral3">-3 flèches</span>
       <span class="chip steal">Vole 1 flèche</span>
+      <span class="chip skip">Passe 1 tour</span>
+      <span class="chip teleport">Téléport</span>
+      <span class="chip mystery">Mystère</span>
     </div>
     <div id="hud" class="hud" hidden><div id="hud-text"></div></div>
   </section>

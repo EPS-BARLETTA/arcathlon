@@ -19,26 +19,27 @@
   },
   {
     "index": 3,
-    "label": "3",
-    "type": "",
-    "value": 0
+    "type": "bonus",
+    "value": 2,
+    "label": "+2"
   },
   {
     "index": 4,
-    "type": "goal",
-    "label": "🎯 Objectif: Avance +4"
+    "label": "4",
+    "type": "",
+    "value": 0
   },
   {
     "index": 5,
-    "type": "bonus",
+    "type": "malus",
     "value": 2,
-    "label": "+2 bonus"
+    "label": "-2"
   },
   {
     "index": 6,
-    "label": "6",
-    "type": "",
-    "value": 0
+    "type": "bonus",
+    "value": 4,
+    "label": "+4"
   },
   {
     "index": 7,
@@ -48,20 +49,21 @@
   },
   {
     "index": 8,
-    "type": "goal",
-    "label": "🎯 Objectif: → +10"
+    "label": "8",
+    "type": "",
+    "value": 0
   },
   {
     "index": 9,
-    "type": "malus",
-    "value": 2,
-    "label": "-2 malus"
+    "type": "bonus",
+    "value": 6,
+    "label": "+6"
   },
   {
     "index": 10,
-    "label": "10",
-    "type": "",
-    "value": 0
+    "type": "malus",
+    "value": 4,
+    "label": "-4"
   },
   {
     "index": 11,
@@ -71,31 +73,33 @@
   },
   {
     "index": 12,
-    "type": "goal",
-    "label": "🎯 Objectif: Rejouer"
+    "type": "bonus",
+    "value": 8,
+    "label": "+8"
   },
   {
     "index": 13,
-    "type": "skip",
-    "value": 1,
-    "label": "Saut 1 tour"
+    "label": "13",
+    "type": "",
+    "value": 0
   },
   {
     "index": 14,
-    "label": "14",
-    "type": "",
-    "value": 0
+    "type": "neutral",
+    "value": 1,
+    "label": "-1🎯"
   },
   {
     "index": 15,
-    "label": "15",
-    "type": "",
-    "value": 0
+    "type": "malus",
+    "value": 6,
+    "label": "-6"
   },
   {
     "index": 16,
-    "type": "goal",
-    "label": "🎯 Objectif: Vole 1 flèche"
+    "label": "16",
+    "type": "",
+    "value": 0
   },
   {
     "index": 17,
@@ -105,21 +109,21 @@
   },
   {
     "index": 18,
-    "label": "18",
-    "type": "",
-    "value": 0
+    "type": "skip",
+    "value": 1,
+    "label": "Passe 1 tour"
   },
   {
     "index": 19,
-    "type": "teleport",
-    "value": 6,
-    "label": "Téléport → 6"
+    "label": "19",
+    "type": "",
+    "value": 0
   },
   {
     "index": 20,
-    "label": "20",
-    "type": "",
-    "value": 0
+    "type": "malus",
+    "value": 8,
+    "label": "-8"
   },
   {
     "index": 21,
@@ -129,21 +133,22 @@
   },
   {
     "index": 22,
-    "label": "22",
-    "type": "",
-    "value": 0
+    "type": "neutral",
+    "value": 2,
+    "label": "-2🎯"
   },
   {
     "index": 23,
-    "type": "bonus",
-    "value": 3,
-    "label": "+3 bonus"
+    "label": "23",
+    "type": "",
+    "value": 0
   },
   {
     "index": 24,
-    "label": "24",
-    "type": "",
-    "value": 0
+    "type": "mystery",
+    "value": 0,
+    "label": "?",
+    "hidden": true
   },
   {
     "index": 25,
@@ -153,22 +158,21 @@
   },
   {
     "index": 26,
-    "label": "26",
-    "type": "",
-    "value": 0
+    "type": "steal",
+    "value": 1,
+    "label": "Vole 1 🎯"
   },
   {
     "index": 27,
-    "type": "mystery",
-    "value": 0,
-    "label": "Mystère ?",
-    "hidden": true
+    "label": "27",
+    "type": "",
+    "value": 0
   },
   {
     "index": 28,
-    "label": "28",
-    "type": "",
-    "value": 0
+    "type": "teleport",
+    "value": 8,
+    "label": "→ 8"
   },
   {
     "index": 29,
@@ -178,15 +182,15 @@
   },
   {
     "index": 30,
-    "label": "30",
-    "type": "",
-    "value": 0
+    "type": "neutral",
+    "value": 3,
+    "label": "-3🎯"
   },
   {
     "index": 31,
-    "type": "bonus",
-    "value": 2,
-    "label": "+2 bonus"
+    "label": "31",
+    "type": "",
+    "value": 0
   },
   {
     "index": 32,
@@ -214,9 +218,9 @@
   },
   {
     "index": 36,
-    "type": "malus",
-    "value": 3,
-    "label": "-3 malus"
+    "label": "36",
+    "type": "",
+    "value": 0
   },
   {
     "index": 37,
@@ -226,9 +230,9 @@
   },
   {
     "index": 38,
-    "label": "38",
-    "type": "",
-    "value": 0
+    "type": "teleport",
+    "value": 25,
+    "label": "→ 25"
   },
   {
     "index": 39,
@@ -246,7 +250,7 @@
     "index": 41,
     "type": "mystery",
     "value": 0,
-    "label": "Mystère ?",
+    "label": "?",
     "hidden": true
   },
   {
@@ -269,9 +273,9 @@
   },
   {
     "index": 45,
-    "type": "skip",
-    "value": 1,
-    "label": "Saut 1 tour"
+    "label": "45",
+    "type": "",
+    "value": 0
   },
   {
     "index": 46,
@@ -287,9 +291,9 @@
   },
   {
     "index": 48,
-    "type": "steal",
-    "value": 1,
-    "label": "Vole 1 flèche"
+    "label": "48",
+    "type": "",
+    "value": 0
   },
   {
     "index": 49,
@@ -299,9 +303,9 @@
   },
   {
     "index": 50,
-    "type": "bonus",
-    "value": 2,
-    "label": "+2 bonus"
+    "label": "50",
+    "type": "",
+    "value": 0
   },
   {
     "index": 51,
@@ -311,9 +315,9 @@
   },
   {
     "index": 52,
-    "label": "52",
-    "type": "",
-    "value": 0
+    "type": "teleport",
+    "value": 44,
+    "label": "→ 44"
   },
   {
     "index": 53,
@@ -323,9 +327,9 @@
   },
   {
     "index": 54,
-    "type": "malus",
-    "value": 4,
-    "label": "-4 malus"
+    "label": "54",
+    "type": "",
+    "value": 0
   },
   {
     "index": 55,
@@ -341,15 +345,16 @@
   },
   {
     "index": 57,
-    "label": "57",
-    "type": "",
-    "value": 0
+    "type": "mystery",
+    "value": 0,
+    "label": "?",
+    "hidden": true
   },
   {
     "index": 58,
-    "type": "teleport",
-    "value": 32,
-    "label": "Téléport → 32"
+    "label": "58",
+    "type": "",
+    "value": 0
   },
   {
     "index": 59,
@@ -359,10 +364,9 @@
   },
   {
     "index": 60,
-    "type": "mystery",
-    "value": 0,
-    "label": "Mystère ?",
-    "hidden": true
+    "label": "60",
+    "type": "",
+    "value": 0
   },
   {
     "index": 61,
