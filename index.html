@@ -3,72 +3,69 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Arcathlon – Spirale v3.6 (Auto-calcul + Oies)</title>
+  <title>Arcathlon – Spirale v3.7 (EPS/iPad)</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="app-header">
-  <h1>🏹 Arcathlon Spirale v3.6</h1>
+  <h1>🏹 Arcathlon Spirale v3.7</h1>
   <nav class="nav-actions">
-    <button id="tab-input" class="btn tab active">📋 Vue Saisie</button>
-    <button id="tab-board" class="btn tab">🌀 Vue Échiquier</button>
+    <button id="tab-input" class="btn tab active">📋 Saisie</button>
+    <button id="tab-board" class="btn tab">🦢 Plateau</button>
+    <button id="btn-full" class="btn ghost">Plein écran</button>
   </nav>
 </header>
 
+<!-- Vue Saisie : grosses cibles tactiles -->
 <main id="view-input" class="screen active">
   <section class="card">
-    <h2>2 contre 2 — Saisie des tirs (0, 6, 7, 8, 9, 10)</h2>
-    <div class="row gap wrap" id="notices"></div>
-    <table class="score-table" aria-label="Saisie des flèches">
-      <thead>
-        <tr>
-          <th>Équipe</th>
-          <th>Tireur</th>
-          <th>Flèche 1</th>
-          <th>Flèche 2</th>
-          <th>Flèche 3</th>
-          <th>Meilleur</th>
-        </tr>
-      </thead>
-      <tbody id="tbody-scores"></tbody>
-      <tfoot>
-        <tr class="team-total"><td colspan="5">Total équipe A (meilleur A1 + A2)</td><td id="totalA">0</td></tr>
-        <tr class="team-total"><td colspan="5">Total équipe B (meilleur B1 + B2)</td><td id="totalB">0</td></tr>
-      </tfoot>
-    </table>
+    <h2>2 vs 2 — Saisie rapide (iPad) • valeurs autorisées : 0, 6, 7, 8, 9, 10</h2>
+    <div id="notices" class="row gap wrap"></div>
+
+    <div class="teams-grid">
+      <div class="team-pane" data-team="A">
+        <h3><span class="tag" style="--c:#2b7fff"></span> Équipe A</h3>
+        <div class="shooters">
+          <div class="shooter" id="A1"></div>
+          <div class="shooter" id="A2"></div>
+        </div>
+        <div class="team-total">Total du tour: <span id="totalA">0</span></div>
+      </div>
+      <div class="team-pane" data-team="B">
+        <h3><span class="tag" style="--c:#ff5b5b"></span> Équipe B</h3>
+        <div class="shooters">
+          <div class="shooter" id="B1"></div>
+          <div class="shooter" id="B2"></div>
+        </div>
+        <div class="team-total">Total du tour: <span id="totalB">0</span></div>
+      </div>
+    </div>
+
     <div class="row gap end">
       <button id="btn-validate" class="btn primary">Valider le tour ▶</button>
       <button id="btn-undo" class="btn ghost">Annuler</button>
+      <button id="btn-reset" class="btn ghost">Remettre à zéro</button>
     </div>
   </section>
 </main>
 
+<!-- Vue Plateau : style jeu de l'oie (extérieur → intérieur, clair et grand) -->
 <main id="view-board" class="screen">
   <section class="board-wrap">
     <div class="board-bg"></div>
-    <svg id="board" viewBox="0 0 1800 1800" class="board-svg" role="img" aria-label="Plateau en spirale extérieur → intérieur"></svg>
+    <svg id="board" viewBox="0 0 2000 2000" class="board-svg" role="img" aria-label="Plateau jeu de l'oie"></svg>
     <div class="legend">
-      <span class="chip bonus2">+2</span>
-      <span class="chip bonus4">+4</span>
-      <span class="chip bonus6">+6</span>
-      <span class="chip bonus8">+8</span>
-      <span class="chip malus2">-2</span>
-      <span class="chip malus4">-4</span>
-      <span class="chip malus6">-6</span>
-      <span class="chip malus8">-8</span>
-      <span class="chip neutral1">-1 flèche</span>
-      <span class="chip neutral2">-2 flèches</span>
-      <span class="chip neutral3">-3 flèches</span>
-      <span class="chip steal">Vole 1 flèche</span>
-      <span class="chip skip">Passe 1 tour</span>
-      <span class="chip teleport">Téléport</span>
-      <span class="chip mystery">Mystère</span>
+      <span class="chip b2">+2</span><span class="chip b4">+4</span><span class="chip b6">+6</span><span class="chip b8">+8</span>
+      <span class="chip m2">-2</span><span class="chip m4">-4</span><span class="chip m6">-6</span><span class="chip m8">-8</span>
+      <span class="chip n1">-1🎯</span><span class="chip n2">-2🎯</span><span class="chip n3">-3🎯</span>
+      <span class="chip steal">Vole 1🎯</span><span class="chip skip">Passe 1</span><span class="chip tp">Téléport</span><span class="chip myst">Mystère</span>
     </div>
     <div id="hud" class="hud" hidden><div id="hud-text"></div></div>
   </section>
 </main>
 
 <dialog id="modal"><div id="modal-content"></div><div class="row end gap"><button id="modal-close" class="btn primary">OK</button></div></dialog>
+
 <script src="app.js"></script>
 </body>
 </html>
