@@ -327,7 +327,6 @@
           </li>
           <li>En course : <strong>Start/Pause</strong> le chrono ; <strong>+1 / −1</strong> pour les tours ; saisir les scores (0,6,7,8,9,10).</li>
           <li>Fin du temps : un bandeau <strong>central</strong> permet d’ajuster la <strong>fraction de tour</strong> et de passer à <b>Course 2</b>, puis au <b>Bilan</b>.</li>
-          <li><b>En Bilan</b> : bouton <b>🔒 Mode prof</b> (code <b>57</b>) pour corriger le tableau avant de générer / scanner le QR.</li>
         </ol>
         <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
       </div>
@@ -686,42 +685,128 @@ function renderSummaryCounters(){ const c=scoreCounts();
   c0El.textContent=c[0]; c6El.textContent=c[6]; c7El.textContent=c[7]; c8El.textContent=c[8]; c9El.textContent=c[9]; c10El.textContent=c[10];
   indiceArcEl.textContent=computeIndiceArc(); }
 
-/* ============ Conseils + Encouragements ============ */
-const adviceBox=qs('#adviceBox'), adviceTxt=qs('#adviceTxt'); const ADVICE_COOLDOWN_EVENTS=3; const adviceHistory=[];
-const ADICT={ breath:"Respire calmement.", breath5:"Ferme les yeux, 5 respirations.", anchor:"Tiens mieux ton arc.", routine:"Refais pareil.", tempo:"Prends ton temps.", hydrate:"Bois un peu.", focus:"Reste concentré." };
-const ENCOURAGE = ["💪 On continue !","👌 Bien joué !","👏 Super, enchaîne !","🚀 Ça progresse !","🔥 Tu gères !"];
-function randEnc(){ return ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)]; }
+/* ============ Conseils + Encouragements + Humour (6e) ============ */
+const adviceBox=qs('#adviceBox'), adviceTxt=qs('#adviceTxt');
+const ADVICE_COOLDOWN_EVENTS=3; const adviceHistory=[];
+const ADICT={
+  breath:"Respire calmement.",
+  breath5:"Ferme les yeux, 5 respirations.",
+  anchor:"Tiens mieux ton arc.",
+  routine:"Refais pareil.",
+  tempo:"Prends ton temps.",
+  hydrate:"Bois un peu.",
+  focus:"Reste concentré."
+};
+
+// Encouragements adaptés au dernier tir
+const ENCOURAGE_START = [
+  "Respire, c’est parti 💪",
+  "Calme et précis.",
+  "Installe ta routine, tranquillement."
+];
+const ENCOURAGE_RES_ZERO = [
+  "Pas grave, on repart 💪",
+  "On se reconcentre et on aligne.",
+  "Respire, vise posé, ça va venir.",
+  "Ne lâche rien, tu sais faire !"
+];
+const ENCOURAGE_RES_LOW = [
+  "On s’accroche, ça va le faire.",
+  "Reste calme, corrige l’appui.",
+  "Concentre-toi, vise plus longtemps.",
+  "Pense routine, on repart."
+];
+const ENCOURAGE_NEUTRAL = [
+  "Propre, garde le focus.",
+  "Stable, enchaîne.",
+  "Continue comme ça.",
+  "On maintient la précision."
+];
+const ENCOURAGE_POS = [
+  "Top, on continue !",
+  "Super, enchaîne !",
+  "C’est bien parti !",
+  "Solide !"
+];
+
+function randFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function pickEncouragement(lastScore, hasShots){
+  if(!hasShots) return randFrom(ENCOURAGE_START);
+  if(lastScore===0) return randFrom(ENCOURAGE_RES_ZERO);
+  if(lastScore===6) return randFrom(ENCOURAGE_RES_LOW);
+  if(lastScore>=9)  return randFrom(ENCOURAGE_POS);
+  if(lastScore>=7)  return randFrom(ENCOURAGE_NEUTRAL);
+  return randFrom(ENCOURAGE_NEUTRAL);
+}
+function lastThreeAreTen(){
+  const L = session.shots.length;
+  if(L<3) return false;
+  return session.shots[L-1].score===10 && session.shots[L-2].score===10 && session.shots[L-3].score===10;
+}
+
 function showAdviceBox(){ adviceBox.style.display=''; }
 function hideAdviceBox(){ adviceBox.style.display='none'; }
-function pushAdviceTypeOnce(type, bag){ if(!type) return; if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return; bag.push(type); }
+function pushAdviceTypeOnce(type, bag){
+  if(!type) return;
+  if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return;
+  bag.push(type);
+}
+
 function buildAdviceTypes(context){
   const types=[]; const T=session.shots.length; const indice=computeIndiceArc();
-  if(context==='shot' && T>0){ const last=session.shots[T-1].score;
+  if(context==='shot' && T>0){
+    const last=session.shots[T-1].score;
     if(last===0){ if(T===1) pushAdviceTypeOnce('breath5',types); else pushAdviceTypeOnce('breath',types); pushAdviceTypeOnce('anchor',types); }
     else if(last<=6){ pushAdviceTypeOnce('anchor',types); pushAdviceTypeOnce('tempo',types); }
     else if(last<=8){ pushAdviceTypeOnce('focus',types); }
     else { pushAdviceTypeOnce('routine',types); }
   }
-  if(indice<40) pushAdviceTypeOnce('breath',types); else if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types);
+  if(indice<40) pushAdviceTypeOnce('breath',types);
+  else if(indice<70) pushAdviceTypeOnce('focus',types);
+  else pushAdviceTypeOnce('routine',types);
+
   if(context==='end'){ pushAdviceTypeOnce('hydrate',types); }
-  // s'il n'y a rien de spécifique détecté, on mettra un encouragement au rendu
   return types;
 }
+
 function setAdvice(t){
   if(!session.adviceEnabled){ hideAdviceBox(); return; }
   showAdviceBox();
-  adviceTxt.textContent = (t&&t.trim())? t : randEnc();
+  const T=session.shots.length;
+  const last = T? session.shots[T-1].score : null;
+  adviceTxt.textContent = (t&&t.trim()) ? t : pickEncouragement(last, !!T);
 }
+
 function setAdviceSmart(context){
   if(!session.adviceEnabled) return;
   const types=buildAdviceTypes(context);
-  types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift();
+  types.forEach(t=>adviceHistory.push(t));
+  while(adviceHistory.length>20) adviceHistory.shift();
+
+  const T=session.shots.length;
+  const last = T? session.shots[T-1].score : null;
+
+  // Base : jusqu’à 2 conseils (3 à la fin)
   let base = types.slice(0,(context==='end')?3:2).map(t=>ADICT[t]).join(' ');
-  // Si pas de conseil "spécifique" (seulement routine/focus) → ajouter un petit mot d’encouragement
+
+  // Ajout encouragement si pas de conseil spécifique ou tir bas (0/6)
   const genericOnly = types.length>0 && types.every(t=> t==='routine' || t==='focus');
-  if(!base || genericOnly){ base = (base? base+' ' : '') + randEnc(); }
+  const needResilience = (last===0 || last===6);
+  if(!base || genericOnly || needResilience){
+    const enc = pickEncouragement(last, !!T);
+    base = base ? (base+' '+enc) : enc;
+  }
+
+  // Humour 6e : seulement si beaucoup de réussites (indice ≥ 85) ET 3×10 de suite, avec une proba pour éviter la surabondance
+  if(context==='shot' && lastThreeAreTen() && computeIndiceArc()>=85){
+    if(Math.random() < 0.35){ // 35% des fois
+      base += " 🏆 Triplé de 10 ! Bravo Robin des Bois 😉";
+    }
+  }
+
   setAdvice(base);
 }
+
 function resetAdviceHistory(){ adviceHistory.length = 0; }
 
 /* ============ Fin de temps : bandeau central ============ */
@@ -848,7 +933,7 @@ function renderSummary(asEdit=false){
   try{ if(window.QRCode){ new QRCode(box,{ text:payloadQR, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }catch(e){}
 }
 
-// Bouton Mode prof
+// Bouton Mode prof (code 57)
 qs('#btnProfMode').onclick = ()=>{
   if(editMode){ return; }
   const code = prompt('Entrer le code Mode prof :');
