@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>arcAthlon-V2 — Compact Gym V2.9</title>
+<title>ArcAthlon-V2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
   p{margin:6px 0; color:var(--muted)}
   .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--ring); padding:14px}
   .hidden{display:none!important}
-  [hidden]{display:none!important} /* Sécurité native si CSS en panne */
+  [hidden]{display:none!important}
 
   .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center}
   button{border:0; border-radius:16px; font-weight:800; cursor:pointer}
@@ -52,12 +52,12 @@
   .time{font-size:clamp(44px,9vw,78px); font-weight:900; letter-spacing:1px}
   .pill{display:inline-block; padding:6px 12px; border-radius:999px; background:#eef2f7; font-weight:800}
 
-  .bigNum{font-size:48px; font-weight:900}
+  .bigNum{font-size:48px; font-weight:900; text-align:center; margin-top:6px} /* nombre de tours centré sous le titre */
   .kpi{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
   .kchip{padding:8px 12px; border-radius:12px; font-weight:800}
-  .kchip.allowed{background:#dbeafe; color:#0b1220;}   /* Autorisées: bleu doux */
-  .kchip.shot{background:#ede9fe; color:#111827;}      /* Tirées: violet doux */
-  .kchip.remain{background:#dcfce7; color:#065f46;}    /* Restantes: vert doux */
+  .kchip.allowed{background:#dbeafe; color:#0b1220}
+  .kchip.shot{background:#ede9fe; color:#111827}
+  .kchip.remain{background:#dcfce7; color:#065f46}
   .glow{animation:pulse 1s infinite alternate}
   @keyframes pulse{from{box-shadow:0 0 0 rgba(34,197,94,0)} to{box-shadow:0 0 18px rgba(34,197,94,.55)}}
 
@@ -80,14 +80,12 @@
   .banner{background:#fff7ed; border:2px dashed #f59e0b; color:#7c2d12; border-radius:12px; padding:8px 10px; text-align:center; font-weight:800}
   .banner.zone2{background:#ecfeff; border-color:#06b6d4; color:#155e75}
 
-  /* Bloc prénom unique (centré, vert, texte blanc) */
   .runnerBadge{
     display:flex; align-items:center; justify-content:center;
     margin:8px auto 0; min-height:56px; padding:10px 18px; max-width:420px;
     background:var(--green); color:#fff; border-radius:16px; font-weight:900; font-size:22px; text-transform:uppercase;
   }
 
-  /* Bandeau fin de temps (fraction + action) */
   .endbar{margin-top:10px; text-align:center}
   .endbar .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px}
 
@@ -100,13 +98,10 @@
   .modal-head.help{background:linear-gradient(90deg,#0a58ff,#7c3aed)}
   .modal-head.safe{background:linear-gradient(90deg,#22c55e,#0ea5e9)}
   .modal-head.indice{background:linear-gradient(90deg,#111827,#0a58ff)}
-  .modal-head.prof{background:linear-gradient(90deg,#0a58ff,#22c55e)}
+  .modal-head.settings{background:linear-gradient(90deg,#0a58ff,#22c55e)}
   .modal-body{padding:18px}
-  .modal-body h4{margin:12px 0 6px}
   .help-list{margin:8px 0 12px; line-height:1.55}
   .help-list li{margin:6px 0}
-
-  .confirmbar .mini{padding:8px 10px; font-size:16px; border-radius:10px}
 
   footer{margin-top:auto; padding:10px; text-align:center; color:var(--muted)}
 </style>
@@ -116,7 +111,7 @@
     <!-- ACCUEIL -->
     <section id="view-cover" class="card hero">
       <div style="width:100%; max-width:640px; margin:0 auto;">
-        <h1>arcAthlon-V2</h1>
+        <h1>ArcAthlon-V2</h1>
         <p class="muted">EPS • ScanProf ready</p>
 
         <div class="btns" style="margin-top:14px">
@@ -126,7 +121,7 @@
           <button id="btnHelp" class="b-slate btn-lg">ℹ️ Aide</button>
           <button id="btnSafety" class="b-ghost btn-lg">🛟 Fiche sécurité</button>
           <button id="btnIndice" class="b-ghost btn-lg">🎯 Indice arc</button>
-          <button id="btnProf" class="b-ghost btn-lg">⚙️ Paramètres Prof</button>
+          <button id="btnSettings" class="b-ghost btn-lg">⚙️ Paramètres</button>
         </div>
       </div>
     </section>
@@ -179,7 +174,7 @@
         <button class="b-slate btn-lg" id="preset33">3 tours → 3 flèches</button>
         <button class="b-slate btn-lg" id="preset11">1 tour → 1 flèche</button>
         <button class="b-slate btn-lg" id="preset13">1 tour → 3 flèches</button>
-        <button id="openProfFromSetup" class="b-ghost btn-lg">⚙️ Paramètres Prof</button>
+        <button id="openSettingsFromSetup" class="b-ghost btn-lg">⚙️ Paramètres</button>
       </div>
 
       <div class="btns" style="margin-top:10px">
@@ -299,13 +294,9 @@
 
       <div class="card" style="margin-top:8px">
         <div class="btns" style="flex-wrap:wrap">
-          <input id="profCode" type="password" inputmode="numeric" placeholder="Code Prof" style="min-width:200px">
-          <button class="b-slate btn-lg" id="activateProf">🔓 Activer</button>
-          <button class="b-amber btn-lg" id="deactivateProf" disabled>🔒 Désactiver</button>
-          <button class="b-green btn-lg" id="applyEdits" disabled>💾 Mettre à jour</button>
           <button class="b-primary btn-lg" id="exportCsv">⬇️ Export CSV</button>
         </div>
-        <p class="muted" id="profHint" style="margin-top:6px"></p>
+        <p class="muted" id="profHint" style="margin-top:6px">Le tableau ci-dessous est non-modifiable (Paramètres simplifiés).</p>
       </div>
 
       <div id="resume" style="margin-top:8px"></div>
@@ -321,17 +312,17 @@
 
   <footer>ArcAthlon - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 
-  <!-- Modales info (toutes cachées par défaut avec hidden) -->
+  <!-- Modales info (cachées par défaut) -->
   <div class="modal" id="modalHelp" hidden>
     <div class="modal-card">
-      <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — arcAthlon-V2</span></div>
+      <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — ArcAthlon-V2</span></div>
       <div class="modal-body">
         <ol class="help-list">
           <li>Saisir pour chaque élève : <strong>Prénom</strong>, <strong>Nom</strong>, <strong>Classe</strong>, <strong>Sexe</strong>.</li>
           <li>Régler <strong>Durée</strong>, <strong>Longueur tour</strong>, et la règle <strong>Tours → Flèches</strong>.</li>
           <li>En course : <strong>Start/Pause</strong> le chrono ; <strong>+1 / −1</strong> pour les tours.</li>
           <li>Le tir est débloqué par <strong>blocs</strong> (selon la règle). Scores : <b>0,6,7,8,9,10</b>.</li>
-          <li>Fin du temps : compléter la <strong>fraction de tour</strong>, enchaîner sur le <strong>coureur suivant</strong> puis voir le <strong>bilan</strong>.</li>
+          <li>Fin du temps : ajuster la <strong>fraction de tour</strong>, puis <strong>Course 2</strong> / <strong>Bilan</strong>.</li>
         </ol>
         <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
       </div>
@@ -380,45 +371,18 @@
     </div>
   </div>
 
-  <!-- Modal Paramètres Prof -->
-  <div class="modal" id="modalProf" hidden>
+  <div class="modal" id="modalSettings" hidden>
     <div class="modal-card">
-      <div class="modal-head prof"><span>⚙️</span><span>Paramètres Prof — arcAthlon-V2</span></div>
+      <div class="modal-head settings"><span>⚙️</span><span>Paramètres</span></div>
       <div class="modal-body">
-        <div id="profGate">
-          <p><b>Code Prof</b> requis :</p>
-          <div class="btns">
-            <input id="profCodeGate" type="password" inputmode="numeric" placeholder="Code Prof" style="min-width:220px">
-            <button id="profUnlock" class="b-slate btn-lg">🔓 Déverrouiller</button>
-          </div>
-          <p class="muted">Astuce : ce paramétrage s’applique à la prochaine session (jusqu’au rechargement).</p>
-        </div>
-        <div id="profPanel" class="hidden" hidden>
-          <h4>Auto-aide “Zone 2”</h4>
-          <div class="grid g2">
-            <div>
-              <label><input type="checkbox" id="cfg_enabled" checked> Activer l’auto-aide</label>
-            </div>
-            <div>
-              <label>Seuil de zéros / volée (≥)</label>
-              <input id="cfg_thrZeros" type="number" min="1" step="1" value="3">
-            </div>
-          </div>
-          <div class="grid g2" style="margin-top:6px">
-            <div>
-              <label>Seuil points / volée (≤)</label>
-              <input id="cfg_thrSum" type="number" min="0" step="1" value="20">
-            </div>
-            <div>
-              <label class="muted"><input type="checkbox" id="cfg_manual" disabled> Confirmation manuelle (désactivée dans ce mode simplifié)</label>
-            </div>
-          </div>
-          <div class="btns" style="margin-top:10px">
-            <button id="profSave" class="b-green btn-lg">💾 Enregistrer</button>
-            <button class="b-slate btn-lg" data-close>Fermer</button>
-          </div>
-          <p class="muted">La Zone 2 s’applique pour <b>3 flèches</b> (volée suivante), puis retour automatique visuel en Zone 1.</p>
-        </div>
+        <p>Paramètres simplifiés pour limiter les erreurs en situation :</p>
+        <ul class="help-list">
+          <li><b>Zones :</b> “Zone 1” affichée en badge. Si la volée précédente est faible, <b>“3 flèches en Zone 2”</b> s’affiche pour la volée suivante.</li>
+          <li>Fin du temps : bandeau <b>Fraction</b> + bouton <b>Course 2 / Bilan</b>.</li>
+          <li>Pas de changement de coureur pendant une course.</li>
+        </ul>
+        <p class="muted">Seuils internes (non modifiables) : au moins <b>3 zéros</b> dans la volée, ou total de volée ≤ <b>20</b>.</p>
+        <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
       </div>
     </div>
   </div>
@@ -429,45 +393,34 @@
 <script>
 'use strict';
 
-/* ================== Réglages ================== */
-const PROF_CODE = '57'; // code prof
-
-/* ================== Helpers ================== */
+/* ================== Constantes ================== */
+const ASSIST_ENABLED = true;     // auto “Zone 2” activée
+const ASSIST_THR_ZEROS = 3;      // déclenche si >= 3 zéros dans la volée
+const ASSIST_THR_SUM   = 20;     // ou si somme de la volée <= 20
 const qs = sel => document.querySelector(sel);
+
+/* ================== Vues & Modales ================== */
 const V = { cover: qs('#view-cover'), setup: qs('#view-setup'), course: qs('#view-course'), summary: qs('#view-summary') };
 function show(name){
   Object.values(V).forEach(v=>{ v.classList.add('hidden'); v.setAttribute('hidden',''); });
   const target = V[name];
   if(target){ target.classList.remove('hidden'); target.removeAttribute('hidden'); }
-  closeModals();
-  window.scrollTo(0,0);
+  closeModals(); window.scrollTo(0,0);
 }
+function openModal(id){ const m=document.getElementById(id); if(!m) return; m.classList.add('show'); m.removeAttribute('hidden'); }
+function closeModals(){ document.querySelectorAll('.modal').forEach(m=>{ m.classList.remove('show'); m.setAttribute('hidden',''); }); }
 function showToast(msg, ms=1600){ const t=qs('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast.t); showToast.t=setTimeout(()=>t.classList.remove('show'),ms); }
+document.addEventListener('click',(e)=>{ if(e.target.matches('[data-close]')) closeModals(); });
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModals(); });
 
-/* ================== Modales ================== */
-function openModal(id){
-  const m = document.getElementById(id);
-  if(!m) return;
-  m.classList.add('show');
-  m.removeAttribute('hidden');
-}
-function closeModals(){
-  document.querySelectorAll('.modal').forEach(m=>{
-    m.classList.remove('show');
-    m.setAttribute('hidden','');
-  });
-}
-document.addEventListener('click', (e)=>{ if(e.target.matches('[data-close]')) closeModals(); });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModals(); });
-
-/* Boutons modales/info */
+/* Boutons info */
 qs('#btnHelp').onclick   = ()=> openModal('modalHelp');
 qs('#btnSafety').onclick = ()=> openModal('modalSafety');
 qs('#btnIndice').onclick = ()=> openModal('modalIndice');
-qs('#btnProf').onclick   = ()=> openModal('modalProf');
-qs('#openProfFromSetup').onclick = ()=> openModal('modalProf');
+qs('#btnSettings').onclick = ()=> openModal('modalSettings');
+qs('#openSettingsFromSetup').onclick = ()=> openModal('modalSettings');
 
-/* ================== Navigation ================== */
+/* Navigation */
 qs('#btnStartApp').onclick = ()=> show('setup');
 qs('#goHome').onclick      = ()=> show('cover');
 qs('#backSetup').onclick   = ()=> show('setup');
@@ -496,41 +449,14 @@ qs('#preset33').onclick = ()=>{ document.getElementById('tours_bloc').value=3; d
 qs('#preset11').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=1; validate(); };
 qs('#preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=3; validate(); };
 
-/* ================== Panel Prof (seuils) ================== */
-const profConfig = { enabled:true, thrZeros:3, thrSum:20, manual:false };
-function applyProfPanelToConfig(){
-  profConfig.enabled = qs('#cfg_enabled').checked;
-  profConfig.thrZeros = Math.max(1, +qs('#cfg_thrZeros').value || 3);
-  profConfig.thrSum   = Math.max(0, +qs('#cfg_thrSum').value || 20);
-}
-function fillProfPanelFromConfig(){
-  qs('#cfg_enabled').checked = profConfig.enabled;
-  qs('#cfg_thrZeros').value  = profConfig.thrZeros;
-  qs('#cfg_thrSum').value    = profConfig.thrSum;
-}
-qs('#profUnlock').onclick = ()=>{
-  const code = (qs('#profCodeGate').value||'').trim();
-  if(code === String(PROF_CODE)){
-    qs('#profGate').classList.add('hidden'); qs('#profGate').setAttribute('hidden','');
-    const panel = qs('#profPanel'); panel.classList.remove('hidden'); panel.removeAttribute('hidden');
-    fillProfPanelFromConfig();
-  }else{
-    showToast('Code incorrect.');
-  }
-};
-qs('#profSave').onclick = ()=>{ applyProfPanelToConfig(); showToast('Paramètres Prof enregistrés.'); };
-
 /* ================== Session & états course ================== */
 const session={
   p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3},
   active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}
 };
-let raceRunning = false;     // chrono lancé
-let timeOver    = false;     // temps écoulé → verrous
-let running     = false;     // timer actif
-let timer=null, t0=0, elapsed=0;
-let phase = 'runner1';       // 'runner1' -> 'runner2' -> 'done'
-let zone2ShotsRemaining = 0; // 3 flèches à consommer en Zone 2 (si programmées)
+let raceRunning=false, timeOver=false, running=false, timer=null, t0=0, elapsed=0;
+let phase='runner1';                  // 'runner1' -> 'runner2' -> 'done'
+let zone2ShotsRemaining=0;            // 3 flèches à consommer si Z2 déclenchée
 
 /* ================== Entrée en course ================== */
 qs('#goCourse').onclick=()=>{
@@ -543,12 +469,12 @@ qs('#goCourse').onclick=()=>{
   session.rules.fb=+document.getElementById('fleches_bloc').value;
 
   phase='runner1'; session.active='p1';
-  resetAdviceHistory();                  // conseils frais pour coureur 1
-  zone2ShotsRemaining = 0;
+  resetAdviceHistory(); zone2ShotsRemaining=0;
   timeOver=false; raceRunning=false; running=false; elapsed=0;
 
-  resetRunnerState(true); // hard
-  paintHeader(); paintRunnerBadge(); show('course');
+  resetRunnerState(true);
+  paintHeader(); paintRunnerBadge(); setAdvice("Respire calmement. Reste concentré.");
+  show('course');
 };
 
 /* ================== Chrono ================== */
@@ -562,8 +488,7 @@ function start(){
   qs('#btnStartChrono').disabled=true;
   qs('#btnPause').disabled=false;
   qs('#btnReset').disabled=false;
-  // pas de retour saisie pendant une course
-  qs('#backSetup').disabled=true;
+  qs('#backSetup').disabled=true; // pas de retour saisie pendant la course
 }
 function pause(){
   if(!running) return;
@@ -576,7 +501,7 @@ function reset(){
   elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
   if(timeOver) return; // si temps fini, on ne rouvre pas
   session.laps=0; session.shots=[]; session.frac=0;
-  zone2ShotsRemaining=0; renderAll(); hideEndBar(); resetAdviceHistory(); setAdvice('');
+  zone2ShotsRemaining=0; renderAll(); hideEndBar(); resetAdviceHistory(); setAdvice("Respire calmement. Reste concentré.");
   updateZoneVisuals();
 }
 function tick(){
@@ -676,11 +601,11 @@ function renderShots(){
   });
 }
 function maybeScheduleAssistForNextVolley(){
-  const fb=session.rules.fb; if(fb<=0) return;
+  const fb=session.rules.fb; if(!ASSIST_ENABLED || fb<=0) return;
   const lastVolley = session.shots.slice(-fb);
   const zeros = lastVolley.filter(s=>s.score===0).length;
   const sum   = lastVolley.reduce((a,b)=>a+b.score,0);
-  const needAssist = profConfig.enabled && (zeros>=profConfig.thrZeros || sum<=profConfig.thrSum);
+  const needAssist = (zeros>=ASSIST_THR_ZEROS) || (sum<=ASSIST_THR_SUM);
   zone2ShotsRemaining = needAssist ? fb : 0; // 3 flèches en Z2 si besoin
   updateZoneVisuals();
 }
@@ -713,9 +638,9 @@ function buildAdviceTypes(context){
     else { pushAdviceTypeOnce('routine',types); }
   }
   if(indice<40) pushAdviceTypeOnce('breath',types); else if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types);
-  if(session.dureeMin<=5) pushAdviceTypeOnce('breath',types); else if(session.dureeMin>10) pushAdviceTypeOnce('tempo',types);
-  if(context==='end'){ pushAdviceTypeOnce('hydrate',types); if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types); }
-  if(types.length===0) pushAdviceTypeOnce('focus',types); return types;
+  if(context==='end'){ pushAdviceTypeOnce('hydrate',types); }
+  if(types.length===0) pushAdviceTypeOnce('focus',types);
+  return types;
 }
 function setAdvice(t){ adviceTxt.textContent = (t&&t.trim())? t : '—'; }
 function setAdviceSmart(context){ const types=buildAdviceTypes(context); types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift(); const max=(context==='end')?3:2; setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' ')); }
@@ -724,19 +649,18 @@ function resetAdviceHistory(){ adviceHistory.length = 0; }
 /* ================== Fin de temps : bandeau ================== */
 const endBar=qs('#endBar'), endActionBtn=qs('#endAction'), distanceOut=qs('#distanceOut');
 document.querySelectorAll('[data-frac]').forEach(b=> b.onclick=()=>{ if(!timeOver) return; session.frac=+b.getAttribute('data-frac'); updateDistanceOut(); });
-function showEndBar(){ endBar.classList.remove('hidden'); endBar.removeAttribute('hidden'); updateDistanceOut(); endActionBtn.textContent = (phase==='runner1') ? '➡️ Coureur suivant' : '📊 Voir le bilan'; if(navigator.vibrate) navigator.vibrate(120); }
+function showEndBar(){ endBar.classList.remove('hidden'); endBar.removeAttribute('hidden'); updateDistanceOut();
+  endActionBtn.textContent = (phase==='runner1') ? '➡️ Course 2' : '📊 Voir le bilan';
+  if(navigator.vibrate) navigator.vibrate(120);
+}
 function hideEndBar(){ endBar.classList.add('hidden'); endBar.setAttribute('hidden',''); }
 function updateDistanceOut(){ const meters=Math.round((session.laps+(session.frac||0))*session.tourM); distanceOut.textContent=`Distance : ${meters} m`; }
 
 endActionBtn.onclick = ()=>{
   if(phase === 'runner1'){
-    finalizeRunnerPartial();
-    phase = 'runner2';
-    prepareNextRunner('p2');
+    finalizeRunnerPartial(); phase = 'runner2'; prepareNextRunner('p2');
   }else{
-    finalizeRunnerPartial();
-    phase = 'done';
-    buildSummaryFromResults(); show('summary'); profMode=false; renderSummary();
+    finalizeRunnerPartial(); phase = 'done'; buildSummaryFromResults(); show('summary'); renderSummary();
   }
 };
 
@@ -749,19 +673,20 @@ function finalizeRunnerPartial(){
 
 function prepareNextRunner(which){
   session.active=which;
-  resetAdviceHistory();               // conseils frais pour coureur 2
+  resetAdviceHistory();
   raceRunning=false; timeOver=false; running=false; clearInterval(timer); elapsed=0; clockEl.textContent='00:00.0';
   session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
   disableRaceInputs(false);
   hideEndBar();
   qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
-  qs('#backSetup').disabled=true; // on reste dans le flux
-  paintHeader(); paintRunnerBadge(); renderAll(); updateZoneVisuals(); setAdvice('');
+  qs('#backSetup').disabled=true;
+  paintHeader(); paintRunnerBadge(); renderAll(); updateZoneVisuals(); setAdvice("Respire calmement. Reste concentré.");
 }
 
 /* ================== Résumé / QR / CSV ================== */
-let summaryData=[]; let profMode=false;
+let summaryData=[];
 function buildSummaryFromResults(){ const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2}); summaryData=out; }
+
 function buildQrData(rows){ return rows.map(d=>({nom:d.nom, prenom:d.prenom, classe:d.classe, sexe:d.sexe,
   distance:d.distance, nb0:d.nb0, nb6:d.nb6, nb7:d.nb7, nb8:d.nb8, nb9:d.nb9, nb10:d.nb10, indice_arc:d.indice_arc })); }
 function buildQR(payload){ const box=qs('#qr'); box.innerHTML=''; try{ if(window.QRCode){ new QRCode(box,{ text:payload, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }catch(e){ console.warn('QR non généré',e); } }
@@ -771,17 +696,17 @@ function toCSV(data){ const H=['nom','prenom','classe','sexe','distance','nb0','
 function renderSummary(){
   const rows = summaryData.map((d,i)=>`
     <tr data-index="${i}">
-      <td data-field="nom" ${profMode?'contenteditable':''}>${d.nom}</td>
-      <td data-field="prenom" ${profMode?'contenteditable':''}>${d.prenom}</td>
-      <td data-field="classe" ${profMode?'contenteditable':''}>${d.classe}</td>
-      <td data-field="sexe" ${profMode?'contenteditable':''}>${d.sexe}</td>
-      <td data-field="distance" ${profMode?'contenteditable':''}>${d.distance}</td>
-      <td data-field="nb0" ${profMode?'contenteditable':''}>${d.nb0}</td>
-      <td data-field="nb6" ${profMode?'contenteditable':''}>${d.nb6}</td>
-      <td data-field="nb7" ${profMode?'contenteditable':''}>${d.nb7}</td>
-      <td data-field="nb8" ${profMode?'contenteditable':''}>${d.nb8}</td>
-      <td data-field="nb9" ${profMode?'contenteditable':''}>${d.nb9}</td>
-      <td data-field="nb10" ${profMode?'contenteditable':''}>${d.nb10}</td>
+      <td>${d.nom}</td>
+      <td>${d.prenom}</td>
+      <td>${d.classe}</td>
+      <td>${d.sexe}</td>
+      <td>${d.distance}</td>
+      <td>${d.nb0}</td>
+      <td>${d.nb6}</td>
+      <td>${d.nb7}</td>
+      <td>${d.nb8}</td>
+      <td>${d.nb9}</td>
+      <td>${d.nb10}</td>
       <td>${d.indice_arc}</td>
     </tr>`).join('');
   qs('#resume').innerHTML = `
@@ -794,49 +719,29 @@ function renderSummary(){
             <th>Distance (m)</th><th>Nb 0</th><th>Nb 6</th><th>Nb 7</th><th>Nb 8</th><th>Nb 9</th><th>Nb 10</th>
             <th>Indice (%)</th>
           </tr></thead>
-          <tbody id="resumeBody">${rows}</tbody>
+          <tbody>${rows}</tbody>
         </table>
       </div>
     </details>`;
   const payloadQR = JSON.stringify(buildQrData(summaryData)); buildQR(payloadQR);
-  const exportBtn=qs('#exportCsv');
-  exportBtn.onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  qs('#exportCsv').onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob); const a=document.createElement('a');
     a.href=url; a.download=`ArcAthlon_${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
-  const profHint=qs('#profHint'), act=qs('#activateProf'), deact=qs('#deactivateProf'), apply=qs('#applyEdits');
-  act.disabled=profMode; deact.disabled=!profMode; apply.disabled=!profMode;
-  profHint.textContent = profMode ? 'Mode Prof : corrigez puis “Mettre à jour”.' : 'Entrer le code Prof pour modifier.';
 }
-function parseEditsFromTable(){
-  const tbody=document.getElementById('resumeBody'); const rows=[...tbody.querySelectorAll('tr')];
-  return rows.map(tr=>{
-    const txt=field=>(tr.querySelector(`[data-field="${field}"]`)?.textContent||'').trim();
-    const int=(field,def=0)=>{ const v=parseInt((txt(field)||'').replace(',','.'),10); return Number.isFinite(v)?Math.max(0,v):def; };
-    const nb0=int('nb0'),nb6=int('nb6'),nb7=int('nb7'),nb8=int('nb8'),nb9=int('nb9'),nb10=int('nb10');
-    const total=nb0+nb6+nb7+nb8+nb9+nb10; const pts=nb6*6+nb7*7+nb8*8+nb9*9+nb10*10;
-    const indice= total>0 ? +(((pts/total)/10*100).toFixed(2)) : 0;
-    const sx=(txt('sexe')||'').toUpperCase(); const sexe = (sx==='M'||sx==='F')?sx:'F';
-    return { nom:txt('nom'), prenom:txt('prenom'), classe:txt('classe'),
-      sexe, distance:int('distance'), nb0,nb6,nb7,nb8,nb9,nb10, indice_arc:indice };
-  });
-}
-qs('#activateProf').onclick=()=>{ const code=(qs('#profCode').value||'').trim(); if(code===PROF_CODE){ profMode=true; renderSummary(); } else { showToast('Code incorrect.'); } };
-qs('#deactivateProf').onclick=()=>{ profMode=false; renderSummary(); };
-qs('#applyEdits').onclick=()=>{ summaryData=parseEditsFromTable(); renderSummary(); showToast('Bilan mis à jour.'); };
 qs('#backToCourse').onclick=()=> show('course');
 
-/* ================== Finaux & init ================== */
+/* ================== Init ================== */
 function resetRunnerState(hard=false){
   if(hard){
     running=false; clearInterval(timer); elapsed=0; clockEl.textContent='00:00.0';
     qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
   }
   session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
-  disableRaceInputs(false); hideEndBar(); resetAdviceHistory(); setAdvice('');
+  disableRaceInputs(false); hideEndBar(); resetAdviceHistory(); setAdvice("Respire calmement. Reste concentré.");
   updateZoneVisuals(); renderAll();
 }
-validate(); setAdvice('');
+validate(); setAdvice("Respire calmement. Reste concentré.");
 try{ console.assert(!!V.cover && !!V.setup && !!V.course && !!V.summary, 'vues ok'); }catch(_){}
 </script>
 </body>
