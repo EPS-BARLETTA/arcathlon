@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Arcathlon — Compact Gym</title>
+<title>Arcathlon — Compact Gym V2.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -22,13 +22,13 @@
     display:flex; flex-direction:column;
   }
   .wrap{max-width:980px; margin:0 auto; padding:16px; width:100%}
-
   h1,h2,h3{margin:0 0 10px; text-align:center}
   h1{font-size:clamp(24px,4vw,36px); font-weight:800}
   h2{font-size:clamp(20px,3vw,28px); font-weight:800}
   h3{font-size:clamp(18px,2.6vw,22px); font-weight:800}
   p{margin:6px 0; color:var(--muted)}
   .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--ring); padding:14px}
+  .hidden{display:none!important}
 
   /* Boutons XL */
   .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
@@ -52,9 +52,9 @@
   @media (max-width:720px){ .g2{grid-template-columns:1fr} }
 
   /* Accueil compact */
-  .hero{display:flex; align-items:center; justify-content:center; min-height:40vh}
+  .hero{display:flex; align-items:center; justify-content:center; min-height:50vh}
 
-  /* Zone chrono compacte */
+  /* Chrono compact */
   .chrono{display:flex; align-items:center; justify-content:center; gap:10px}
   .time{font-size:clamp(40px,8vw,72px); font-weight:900; letter-spacing:1px}
   .pill{display:inline-block; padding:6px 12px; border-radius:999px; background:#eef2f7; font-weight:800}
@@ -74,7 +74,7 @@
   .ad-badge{display:inline-block; padding:4px 10px; border-radius:999px; font-weight:800; color:#fff; background:var(--adviceBadge); font-size:14px}
   .ad-text{margin-top:6px; font-size:18px; color:#0b1220; font-weight:800}
 
-  /* Table tir + résumé minimal repliable */
+  /* Table tir + résumé repliables */
   details{background:#f8fafc; border:1px dashed #dbe1ea; border-radius:12px; padding:8px 10px}
   details > summary{cursor:pointer; font-weight:800; margin:6px 0}
   table{width:100%; border-collapse:collapse}
@@ -98,7 +98,7 @@
         <h1>Arcathlon — Compact Gym</h1>
         <p class="muted">EPS • ScanProf ready</p>
         <div class="btns" style="margin-top:10px">
-          <button id="btnStart" class="b-primary btn-xl">▶️ Démarrer</button>
+          <button id="btnStartApp" class="b-primary btn-xl">▶️ Démarrer</button>
           <button id="btnHelp" class="b-slate btn-lg">ℹ️ Aide</button>
         </div>
       </div>
@@ -173,7 +173,7 @@
         <div class="chrono card" style="margin-top:6px">
           <div class="time" id="clock">00:00.0</div>
           <div class="btns">
-            <button id="btnStart" class="b-primary btn-lg">▶️</button>
+            <button id="btnStartChrono" class="b-primary btn-lg">▶️</button>
             <button id="btnPause" class="b-amber btn-lg" disabled>⏸️</button>
             <button id="btnReset" class="b-red btn-lg" disabled>↺</button>
           </div>
@@ -305,69 +305,39 @@ const PROF_CODE = '57';
 
 /* ================== Helpers ================== */
 const qs = sel => document.querySelector(sel);
-const V = {
-  cover: qs('#view-cover'),
-  setup: qs('#view-setup'),
-  course: qs('#view-course'),
-  summary: qs('#view-summary')
-};
-function show(name){
-  Object.values(V).forEach(v=>v.classList.add('hidden'));
-  V[name].classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-function showToast(msg, ms=1800){
-  const t = document.getElementById('toast');
-  if(!t) return;
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(showToast.t);
-  showToast.t = setTimeout(()=> t.classList.remove('show'), ms);
-}
+const V = { cover: qs('#view-cover'), setup: qs('#view-setup'), course: qs('#view-course'), summary: qs('#view-summary') };
+function show(name){ Object.values(V).forEach(v=>v.classList.add('hidden')); V[name].classList.remove('hidden'); window.scrollTo(0,0); }
+function showToast(msg, ms=1600){ const t=qs('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast.t); showToast.t=setTimeout(()=>t.classList.remove('show'),ms); }
 
-/* ================== Navigation ================== */
-qs('#btnStart').onclick = ()=> show('setup');
-qs('#goHome').onclick   = ()=> show('cover');
-qs('#backSetup').onclick= ()=> show('setup');
-qs('#backHome2').onclick= ()=> show('cover');
+/* ================== Navigation (IDs uniques !) ================== */
+qs('#btnStartApp').onclick = ()=> show('setup');   // accueil -> saisie
+qs('#goHome').onclick      = ()=> show('cover');   // depuis saisie
+qs('#backSetup').onclick   = ()=> show('setup');   // depuis course
+qs('#backHome2').onclick   = ()=> show('cover');   // depuis bilan
 
 /* ================== Validation saisie ================== */
 function clean(s){ return (s||'').replace(/\s+/g,' ').trim(); }
 function val(id){ return clean(document.getElementById(id).value); }
 function okNum(v,min){ const n=+v; return Number.isFinite(n) && n>=min; }
 function hasValue(id){ return val(id).length>0; }
-
 function validate(){
   const fields=['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe'];
-  let ok = fields.every(id => {
-    const el = document.getElementById(id);
-    const good = hasValue(id);
-    el.style.borderColor = good?'#e5e7eb':'#ef4444';
-    return good;
-  });
-  const okDur = okNum(val('duree_min'),1);
-  const okTour = okNum(val('tour_m'),10);
-  const okTB = okNum(val('tours_bloc'),1);
-  const okFB = okNum(val('fleches_bloc'),1);
-  ['duree_min','tour_m','tours_bloc','fleches_bloc'].forEach(id=>{
-    document.getElementById(id).style.borderColor = okNum(val(id), (id==='tour_m'?10:1)) ? '#e5e7eb':'#ef4444';
-  });
+  let ok = fields.every(id => { const el=document.getElementById(id); const good=hasValue(id); el.style.borderColor=good?'#e5e7eb':'#ef4444'; return good; });
+  const okDur=okNum(val('duree_min'),1), okTour=okNum(val('tour_m'),10), okTB=okNum(val('tours_bloc'),1), okFB=okNum(val('fleches_bloc'),1);
+  ['duree_min','tour_m','tours_bloc','fleches_bloc'].forEach(id=>{ document.getElementById(id).style.borderColor = okNum(val(id), (id==='tour_m'?10:1)) ? '#e5e7eb':'#ef4444'; });
   ok = ok && okDur && okTour && okTB && okFB;
-  qs('#goCourse').disabled = !ok;
-  return ok;
+  qs('#goCourse').disabled = !ok; return ok;
 }
 ['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe','duree_min','tour_m','tours_bloc','fleches_bloc']
 .forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input',validate); el.addEventListener('change',validate); });
 
 /* Presets */
-document.getElementById('preset33').onclick = ()=>{ document.getElementById('tours_bloc').value=3; document.getElementById('fleches_bloc').value=3; validate(); };
-document.getElementById('preset11').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=1; validate(); };
-document.getElementById('preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=3; validate(); };
+qs('#preset33').onclick = ()=>{ document.getElementById('tours_bloc').value=3; document.getElementById('fleches_bloc').value=3; validate(); };
+qs('#preset11').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=1; validate(); };
+qs('#preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=3; validate(); };
 
 /* ================== Session ================== */
-const session={ p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3},
-  active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false };
-
+const session={ p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3}, active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false };
 qs('#goCourse').onclick=()=>{
   if(!validate()){ showToast('Complétez tous les champs.'); return; }
   session.p1={ prenom:val('p1_prenom'), nom:val('p1_nom'), classe:val('p1_classe'), sexe:val('p1_sexe') };
@@ -382,64 +352,40 @@ qs('#goCourse').onclick=()=>{
 const clockEl=qs('#clock'), targetEl=qs('#target');
 let t0=0, elapsed=0, timer=null, running=false;
 function start(){ if(session.finished||running) return; running=true; t0=Date.now()-elapsed; timer=setInterval(tick,100);
-  qs('#btnStart').disabled=true; qs('#btnPause').disabled=false; qs('#btnReset').disabled=false; }
+  qs('#btnStartChrono').disabled=true; qs('#btnPause').disabled=false; qs('#btnReset').disabled=false; }
 function pause(){ if(!running) return; running=false; clearInterval(timer);
-  qs('#btnStart').disabled=false; qs('#btnPause').disabled=true; }
+  qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; }
 function reset(){ pause(); elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
   session.laps=0; session.shots=[]; session.frac=0; renderAll(); hideEnd(); adviceHistory.length=0; setAdvice(''); }
 function tick(){ elapsed=Date.now()-t0; const cs=Math.floor(elapsed/100); const m=Math.floor(cs/600), s=Math.floor((cs%600)/10), d=cs%10;
-  clockEl.textContent=`${m<10?'0':''}${m}:${s<10?'0':''}${s}.${d}`;
-  if(m>=session.dureeMin){ pause(); showEnd(); setAdviceSmart('end'); } }
-qs('#btnStart').onclick=start; qs('#btnPause').onclick=pause; qs('#btnReset').onclick=reset;
+  clockEl.textContent=`${m<10?'0':''}${m}:${s<10?'0':''}${s}.${d}`; if(m>=session.dureeMin){ pause(); showEnd(); setAdviceSmart('end'); } }
+qs('#btnStartChrono').onclick=start; qs('#btnPause').onclick=pause; qs('#btnReset').onclick=reset;
 
 /* ================== UI header ================== */
 const runnerTitle=qs('#runnerTitle'), metaRunner=qs('#metaRunner'), lapMetersEl=qs('#lapMeters'),
       lapsEl=qs('#laps'), liveDistanceEl=qs('#liveDistance');
-
-function paintHeader(){
-  const R=session[session.active];
-  runnerTitle.textContent=`Coureur — ${R.prenom} ${R.nom}`;
-  metaRunner.textContent=`${R.classe} • ${R.sexe}`;
-  lapMetersEl.textContent=session.tourM;
-  targetEl.textContent=session.dureeMin;
-}
+function paintHeader(){ const R=session[session.active]; runnerTitle.textContent=`Coureur — ${R.prenom} ${R.nom}`; metaRunner.textContent=`${R.classe} • ${R.sexe}`;
+  lapMetersEl.textContent=session.tourM; targetEl.textContent=session.dureeMin; }
 
 /* ================== Runners switch ================== */
 qs('#pickP1').onclick=()=> switchRunner('p1');
 qs('#pickP2').onclick=()=> switchRunner('p2');
-
 const temp={ p1:{laps:0,frac:0,shots:[]}, p2:{laps:0,frac:0,shots:[]} };
 function saveTemp(){ temp[session.active]={ laps:session.laps, frac:session.frac, shots:JSON.parse(JSON.stringify(session.shots)) }; }
 function loadTemp(){ const t=temp[session.active]; session.laps=t.laps; session.frac=t.frac; session.shots=JSON.parse(JSON.stringify(t.shots)); renderAll(); hideEnd(); }
-function switchRunner(which){
-  if(session.finished) return;
-  saveTemp(); session.active=which; reset(); paintHeader(); loadTemp();
-}
+function switchRunner(which){ if(session.finished) return; saveTemp(); session.active=which; reset(); paintHeader(); loadTemp(); }
 
 /* ================== Règles Tours → Flèches ================== */
-function calcAllowedShots(){
-  const {tb,fb}=session.rules; const blocs=Math.floor(session.laps/tb); return blocs*fb;
-}
+function calcAllowedShots(){ const {tb,fb}=session.rules; const blocs=Math.floor(session.laps/tb); return blocs*fb; }
 const allowedEl=qs('#allowed'), shotCountEl=qs('#shotCount'), remainEl=qs('#remain');
-function renderAllowances(){
-  const allowed=calcAllowedShots(); const remain=Math.max(0,allowed-session.shots.length);
-  allowedEl.textContent=allowed; shotCountEl.textContent=session.shots.length; remainEl.textContent=remain;
-  qs('#lapPlus').disabled = (remain>0); // bloc +1 tour si tirs en attente
-}
+function renderAllowances(){ const allowed=calcAllowedShots(); const remain=Math.max(0,allowed-session.shots.length);
+  allowedEl.textContent=allowed; shotCountEl.textContent=session.shots.length; remainEl.textContent=remain; qs('#lapPlus').disabled = (remain>0); }
 
 /* ================== Tours ================== */
-qs('#lapPlus').onclick=()=>{
-  if(session.finished) return;
-  const allowed=calcAllowedShots(); const pending=allowed-session.shots.length;
-  if(pending>0){ showToast(`D'abord tirer ${pending} flèche${pending>1?'s':''}`); return; }
-  session.laps++; renderAll();
-};
+qs('#lapPlus').onclick=()=>{ if(session.finished) return; const allowed=calcAllowedShots(); const pending=allowed-session.shots.length;
+  if(pending>0){ showToast(`D'abord tirer ${pending} flèche${pending>1?'s':''}`); return; } session.laps++; renderAll(); };
 qs('#lapMinus').onclick=()=>{ if(session.finished) return; session.laps=Math.max(0,session.laps-1); renderAll(); };
-
-function renderLaps(){
-  lapsEl.textContent=session.laps;
-  liveDistanceEl.textContent=Math.round((session.laps+(session.frac||0))*session.tourM);
-}
+function renderLaps(){ lapsEl.textContent=session.laps; liveDistanceEl.textContent=Math.round((session.laps+(session.frac||0))*session.tourM); }
 
 /* ================== Tir ================== */
 const shotsTable=qs('#shotsTable');
@@ -449,92 +395,50 @@ document.querySelectorAll('#scoreButtons [data-score]').forEach(btn=>{
     const allowed=calcAllowedShots();
     if(session.shots.length>=allowed){
       const need = session.rules.tb - (session.laps % session.rules.tb || session.rules.tb);
-      showToast(`Pas assez de tours : +${need} tour${need>1?'s':''}`);
-      return;
+      showToast(`Pas assez de tours : +${need} tour${need>1?'s':''}`); return;
     }
-    addShot(+btn.getAttribute('data-score'));
-    setAdviceSmart('shot');
+    addShot(+btn.getAttribute('data-score')); setAdviceSmart('shot');
   };
 });
-function addShot(score){
-  session.shots.push({n:session.shots.length+1, score});
-  renderShots(); renderAllowances(); renderSummaryCounters();
-}
+function addShot(score){ session.shots.push({n:session.shots.length+1, score}); renderShots(); renderAllowances(); renderSummaryCounters(); }
 function renderShots(){
-  shotsTable.innerHTML='';
-  [...session.shots].slice().reverse().forEach(s=>{
+  shotsTable.innerHTML=''; [...session.shots].slice().reverse().forEach(s=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${s.n}</td><td>${s.score}</td><td><button class="b-red btn-lg">Retirer</button></td>`;
-    tr.querySelector('button').onclick=()=>{
-      if(session.finished) return;
-      session.shots=session.shots.filter(x=>x.n!==s.n).map((x,i)=>({n:i+1,score:x.score}));
-      renderShots(); renderAllowances(); renderSummaryCounters();
-    };
+    tr.querySelector('button').onclick=()=>{ if(session.finished) return;
+      session.shots=session.shots.filter(x=>x.n!==s.n).map((x,i)=>({n:i+1,score:x.score})); renderShots(); renderAllowances(); renderSummaryCounters(); };
     shotsTable.append(tr);
   });
 }
 
 /* ================== Indice & compteurs ================== */
 const c0El=qs('#c0'), c6El=qs('#c6'), c7El=qs('#c7'), c8El=qs('#c8'), c9El=qs('#c9'), c10El=qs('#c10'), indiceArcEl=qs('#indiceArc');
-function scoreCounts(){
-  const c={0:0,6:0,7:0,8:0,9:0,10:0}; session.shots.forEach(s=>{ if(c.hasOwnProperty(s.score)) c[s.score]++; }); return c;
-}
+function scoreCounts(){ const c={0:0,6:0,7:0,8:0,9:0,10:0}; session.shots.forEach(s=>{ if(c.hasOwnProperty(s.score)) c[s.score]++; }); return c; }
 function sumScores(){ return session.shots.reduce((a,b)=> a + ((b&&b.score)||0), 0); }
-function computeIndiceArc(){
-  const T=session.shots.length; if(!T) return 0; const avg=sumScores()/T; return +(avg*10).toFixed(2);
-}
-function renderSummaryCounters(){
-  const c=scoreCounts();
+function computeIndiceArc(){ const T=session.shots.length; if(!T) return 0; const avg=sumScores()/T; return +(avg*10).toFixed(2); }
+function renderSummaryCounters(){ const c=scoreCounts();
   c0El.textContent=c[0]; c6El.textContent=c[6]; c7El.textContent=c[7]; c8El.textContent=c[8]; c9El.textContent=c[9]; c10El.textContent=c[10];
-  indiceArcEl.textContent=computeIndiceArc();
-}
+  indiceArcEl.textContent=computeIndiceArc(); }
 
 /* ================== Conseils anti-redondants ================== */
-const adviceTxt=qs('#adviceTxt');
-const ADVICE_COOLDOWN_EVENTS=3;
-const adviceHistory=[];
-const ADICT={
-  breath:"Respire calmement.",
-  breath5:"Ferme les yeux, 5 respirations.",
-  anchor:"Tiens mieux ton arc.",
-  routine:"Refais pareil.",
-  steady:"Bouge moins le bras.",
-  tempo:"Prends ton temps.",
-  hydrate:"Bois un peu.",
-  focus:"Reste concentré."
-};
-function pushAdviceTypeOnce(type, bag){
-  if(!type) return;
-  if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return;
-  bag.push(type);
-}
+const adviceTxt=qs('#adviceTxt'); const ADVICE_COOLDOWN_EVENTS=3; const adviceHistory=[];
+const ADICT={ breath:"Respire calmement.", breath5:"Ferme les yeux, 5 respirations.", anchor:"Tiens mieux ton arc.", routine:"Refais pareil.", tempo:"Prends ton temps.", hydrate:"Bois un peu.", focus:"Reste concentré." };
+function pushAdviceTypeOnce(type, bag){ if(!type) return; if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return; bag.push(type); }
 function buildAdviceTypes(context){
   const types=[]; const T=session.shots.length; const indice=computeIndiceArc();
-  if(context==='shot' && T>0){
-    const last=session.shots[T-1].score;
+  if(context==='shot' && T>0){ const last=session.shots[T-1].score;
     if(last===0){ if(T===1) pushAdviceTypeOnce('breath5',types); else pushAdviceTypeOnce('breath',types); pushAdviceTypeOnce('anchor',types); }
     else if(last<=6){ pushAdviceTypeOnce('anchor',types); pushAdviceTypeOnce('tempo',types); }
     else if(last<=8){ pushAdviceTypeOnce('focus',types); }
     else { pushAdviceTypeOnce('routine',types); }
   }
-  if(indice<40) pushAdviceTypeOnce('breath',types);
-  else if(indice<70) pushAdviceTypeOnce('focus',types);
-  else pushAdviceTypeOnce('routine',types);
-
-  if(session.dureeMin<=5) pushAdviceTypeOnce('breath',types);
-  else if(session.dureeMin>10) pushAdviceTypeOnce('tempo',types);
-
+  if(indice<40) pushAdviceTypeOnce('breath',types); else if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types);
+  if(session.dureeMin<=5) pushAdviceTypeOnce('breath',types); else if(session.dureeMin>10) pushAdviceTypeOnce('tempo',types);
   if(context==='end'){ pushAdviceTypeOnce('hydrate',types); if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types); }
-  if(types.length===0) pushAdviceTypeOnce('focus',types);
-  return types;
+  if(types.length===0) pushAdviceTypeOnce('focus',types); return types;
 }
 function setAdvice(t){ adviceTxt.textContent = (t&&t.trim())? t : '—'; }
-function setAdviceSmart(context){
-  const types=buildAdviceTypes(context);
-  types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift();
-  const max=(context==='end')?3:2;
-  setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' '));
-}
+function setAdviceSmart(context){ const types=buildAdviceTypes(context); types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift(); const max=(context==='end')?3:2; setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' ')); }
 
 /* ================== Fin de course ================== */
 const endCard=qs('#endCard'), distanceOut=qs('#distanceOut'), toSummaryWrap=qs('#toSummaryWrap');
@@ -542,24 +446,16 @@ document.querySelectorAll('[data-frac]').forEach(b=> b.onclick=()=>{ if(session.
 qs('#finishRunner').onclick=()=> finalizeRunner();
 function showEnd(){ endCard.classList.remove('hidden'); updateDistanceOut(); if(navigator.vibrate) navigator.vibrate(120); }
 function hideEnd(){ endCard.classList.add('hidden'); }
-function updateDistanceOut(){
-  const meters=Math.round((session.laps+(session.frac||0))*session.tourM);
-  distanceOut.textContent=`Distance : ${meters} m`;
-}
+function updateDistanceOut(){ const meters=Math.round((session.laps+(session.frac||0))*session.tourM); distanceOut.textContent=`Distance : ${meters} m`; }
 function finalizeRunner(){
-  const R=session[session.active];
-  const meters=Math.round((session.laps+(session.frac||0))*session.tourM);
+  const R=session[session.active]; const meters=Math.round((session.laps+(session.frac||0))*session.tourM);
   const c=scoreCounts(); const indice=computeIndiceArc();
   session.results[session.active]={ prenom:R.prenom, nom:R.nom, classe:R.classe, sexe:R.sexe, distance:meters,
     nb0:c[0], nb6:c[6], nb7:c[7], nb8:c[8], nb9:c[9], nb10:c[10], indice_arc:indice };
   hideEnd();
-
   const other=session.active==='p1'?'p2':'p1';
-  if(!session.results[other]){
-    setAdviceSmart('end'); showToast('Coureur terminé. Passez au second.'); switchRunner(other); return;
-  }
-  session.finished=true;
-  document.getElementById('pickP1').disabled=true; document.getElementById('pickP2').disabled=true;
+  if(!session.results[other]){ setAdviceSmart('end'); showToast('Coureur terminé. Passez au second.'); switchRunner(other); return; }
+  session.finished=true; document.getElementById('pickP1').disabled=true; document.getElementById('pickP2').disabled=true;
   toSummaryWrap.classList.remove('hidden'); setAdviceSmart('end');
 }
 
@@ -567,16 +463,10 @@ function finalizeRunner(){
 let summaryData=[]; let profMode=false;
 function buildQrData(rows){ return rows.map(d=>({nom:d.nom, prenom:d.prenom, classe:d.classe, sexe:d.sexe,
   distance:d.distance, nb0:d.nb0, nb6:d.nb6, nb7:d.nb7, nb8:d.nb8, nb9:d.nb9, nb10:d.nb10, indice_arc:d.indice_arc })); }
-function buildQR(payload){
-  const box=document.getElementById('qr'); box.innerHTML='';
-  try{ if(window.QRCode){ new QRCode(box,{ text:payload, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }
-  catch(e){ console.warn('QR non généré',e); }
-}
-function toCSV(data){
-  const headers=['nom','prenom','classe','sexe','distance','nb0','nb6','nb7','nb8','nb9','nb10','indice_arc'];
-  const esc = v => { const s = (v==null?'':String(v)); return /[;\"\n]/.test(s) ? `"${s.replace(/\"/g,'""')}"` : s; };
-  return [headers.join(';'), ...data.map(d=>headers.map(h=>esc(d[h])).join(';'))].join('\n');
-}
+function buildQR(payload){ const box=qs('#qr'); box.innerHTML=''; try{ if(window.QRCode){ new QRCode(box,{ text:payload, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }catch(e){ console.warn('QR non généré',e); } }
+function toCSV(data){ const H=['nom','prenom','classe','sexe','distance','nb0','nb6','nb7','nb8','nb9','nb10','indice_arc'];
+  const esc=v=>{ const s=(v==null?'':String(v)); return /[;\"\n]/.test(s)? `"${s.replace(/\"/g,'""')}"` : s; };
+  return [H.join(';'), ...data.map(d=>H.map(h=>esc(d[h])).join(';'))].join('\n'); }
 function renderSummary(){
   const rows = summaryData.map((d,i)=>`
     <tr data-index="${i}">
@@ -593,8 +483,8 @@ function renderSummary(){
       <td data-field="nb10" ${profMode?'contenteditable':''}>${d.nb10}</td>
       <td>${d.indice_arc}</td>
     </tr>`).join('');
-  document.getElementById('resume').innerHTML = `
-    <details open>
+  qs('#resume').innerHTML = `
+    <details>
       <summary>Tableau récapitulatif</summary>
       <div style="overflow:auto; margin-top:8px">
         <table>
@@ -608,16 +498,11 @@ function renderSummary(){
       </div>
     </details>`;
   const payloadQR = JSON.stringify(buildQrData(summaryData)); buildQR(payloadQR);
-
-  const exportBtn=document.getElementById('exportCsv');
-  exportBtn.onclick=()=>{
-    const csv=toCSV(summaryData);
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download=`Arcathlon_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  };
-
+  const exportBtn=qs('#exportCsv');
+  exportBtn.onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=`Arcathlon_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
   const profHint=qs('#profHint'), act=qs('#activateProf'), deact=qs('#deactivateProf'), apply=qs('#applyEdits');
   act.disabled=profMode; deact.disabled=!profMode; apply.disabled=!profMode;
   profHint.textContent = profMode ? 'Mode Prof : corrigez puis “Mettre à jour”.' : 'Entrer le code Prof pour modifier.';
@@ -635,28 +520,21 @@ function parseEditsFromTable(){
       distance:int('distance'), nb0,nb6,nb7,nb8,nb9,nb10, indice_arc:indice };
   });
 }
-
-/* ================== Summary actions ================== */
-document.getElementById('activateProf').onclick=()=>{
-  const code=(document.getElementById('profCode').value||'').trim();
-  if(code===PROF_CODE){ profMode=true; renderSummary(); } else { showToast('Code incorrect.'); }
-};
-document.getElementById('deactivateProf').onclick=()=>{ profMode=false; renderSummary(); };
-document.getElementById('applyEdits').onclick=()=>{
-  summaryData=parseEditsFromTable(); renderSummary(); showToast('Bilan mis à jour.');
-};
-document.getElementById('goSummary').onclick=()=>{
-  const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2});
-  summaryData=out; show('summary'); profMode=false; renderSummary();
-};
+qs('#activateProf').onclick=()=>{ const code=(qs('#profCode').value||'').trim(); if(code===PROF_CODE){ profMode=true; renderSummary(); } else { showToast('Code incorrect.'); } };
+qs('#deactivateProf').onclick=()=>{ profMode=false; renderSummary(); };
+qs('#applyEdits').onclick=()=>{ summaryData=parseEditsFromTable(); renderSummary(); showToast('Bilan mis à jour.'); };
+qs('#goSummary').onclick=()=>{ const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2});
+  summaryData=out; show('summary'); profMode=false; renderSummary(); };
 qs('#backToCourse').onclick=()=> show('course');
 
 /* ================== Rendu global ================== */
 function renderAll(){ renderLaps(); renderAllowances(); renderShots(); renderSummaryCounters(); }
 
+/* ================== Conseils init ================== */
+function setAdvice(t){ qs('#adviceTxt').textContent = (t&&t.trim())? t : '—'; }
+
 /* ================== Init ================== */
-validate();
-setAdvice('');
+validate(); setAdvice('');
 try{ console.assert(!!V.cover && !!V.setup && !!V.course && !!V.summary, 'vues ok'); }catch(_){}
 </script>
 </body>
