@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Arcathlon — Compact Gym V2.2</title>
+<title>Arcathlon — Compact V2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -113,16 +113,20 @@
           <label>Prénom</label><input id="p1_prenom" autocomplete="off">
           <label>Nom</label><input id="p1_nom" autocomplete="off">
           <label>Classe</label><input id="p1_classe" autocomplete="off">
-          <label>Sexe (optionnel)</label>
-          <select id="p1_sexe"><option value="">—</option><option>F</option><option>M</option></select>
+          <label>Sexe</label>
+          <select id="p1_sexe">
+            <option value="">—</option><option>F</option><option>M</option>
+          </select>
         </div>
         <div>
           <h3>Coureur 2</h3>
           <label>Prénom</label><input id="p2_prenom" autocomplete="off">
           <label>Nom</label><input id="p2_nom" autocomplete="off">
           <label>Classe</label><input id="p2_classe" autocomplete="off">
-          <label>Sexe (optionnel)</label>
-          <select id="p2_sexe"><option value="">—</option><option>F</option><option>M</option></select>
+          <label>Sexe</label>
+          <select id="p2_sexe">
+            <option value="">—</option><option>F</option><option>M</option>
+          </select>
         </div>
       </div>
 
@@ -310,20 +314,20 @@ function show(name){ Object.values(V).forEach(v=>v.classList.add('hidden')); V[n
 function showToast(msg, ms=1600){ const t=qs('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast.t); showToast.t=setTimeout(()=>t.classList.remove('show'),ms); }
 
 /* ================== Navigation ================== */
-qs('#btnStartApp').onclick = ()=> show('setup');   // accueil -> saisie
-qs('#goHome').onclick      = ()=> show('cover');   // depuis saisie
-qs('#backSetup').onclick   = ()=> show('setup');   // depuis course
-qs('#backHome2').onclick   = ()=> show('cover');   // depuis bilan
+qs('#btnStartApp').onclick = ()=> show('setup');
+qs('#goHome').onclick      = ()=> show('cover');
+qs('#backSetup').onclick   = ()=> show('setup');
+qs('#backHome2').onclick   = ()=> show('cover');
 
-/* ================== Validation saisie ================== */
+/* ================== Validation saisie (Sexe obligatoire) ================== */
 function clean(s){ return (s||'').replace(/\s+/g,' ').trim(); }
 function val(id){ return clean(document.getElementById(id).value); }
 function okNum(v,min){ const n=+v; return Number.isFinite(n) && n>=min; }
 function mark(el, good){ el.style.borderColor = good ? '#e5e7eb' : '#ef4444'; }
 
 function validate(){
-  // Champs requis: prénom/nom/classe (sexe = optionnel)
-  const req = ['p1_prenom','p1_nom','p1_classe','p2_prenom','p2_nom','p2_classe'];
+  // Requis : Prénom, Nom, Classe, Sexe (pour chaque coureur)
+  const req = ['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe'];
   let ok = true;
   req.forEach(id=>{ const el=document.getElementById(id); const good=val(id).length>0; mark(el,good); ok=ok&&good; });
 
@@ -338,7 +342,7 @@ function validate(){
   return ok;
 }
 
-// Ecouteurs validation live
+// Écouteurs validation live
 ['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe','duree_min','tour_m','tours_bloc','fleches_bloc']
 .forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input',validate); el.addEventListener('change',validate); });
 
@@ -349,15 +353,22 @@ qs('#preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; d
 
 /* ================== Session ================== */
 const session={ p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3}, active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false };
+
 qs('#goCourse').onclick=()=>{
-  if(!validate()){ showToast('Complétez les champs requis (sans le sexe).'); return; }
-  session.p1={ prenom:val('p1_prenom'), nom:val('p1_nom'), classe:val('p1_classe'), sexe:val('p1_sexe')||'',
-  };
-  session.p2={ prenom:val('p2_prenom'), nom:val('p2_nom'), classe:val('p2_classe'), sexe:val('p2_sexe')||'',
-  };
+  if(!validate()){
+    showToast('Complétez les champs requis (dont Sexe).');
+    return;
+  }
+  // Normalisation sexe F/M
+  function sex(id){ const s=(val(id)||'').toUpperCase(); return s==='M'?'M':'F'; }
+
+  session.p1={ prenom:val('p1_prenom'), nom:val('p1_nom'), classe:val('p1_classe'), sexe:sex('p1_sexe') };
+  session.p2={ prenom:val('p2_prenom'), nom:val('p2_nom'), classe:val('p2_classe'), sexe:sex('p2_sexe') };
+
   session.dureeMin=+val('duree_min'); session.tourM=+val('tour_m');
   session.rules.tb=+document.getElementById('tours_bloc').value;
   session.rules.fb=+document.getElementById('fleches_bloc').value;
+
   session.active='p1'; resetRunnerState(); paintHeader(); show('course');
 };
 
@@ -380,7 +391,7 @@ const runnerTitle=qs('#runnerTitle'), metaRunner=qs('#metaRunner'), lapMetersEl=
 function paintHeader(){
   const R=session[session.active];
   runnerTitle.textContent=`Coureur — ${R.prenom} ${R.nom}`;
-  metaRunner.textContent=`${R.classe}${R.sexe?(' • '+R.sexe):''}`;
+  metaRunner.textContent=`${R.classe} • ${R.sexe}`;
   lapMetersEl.textContent=session.tourM;
   targetEl.textContent=session.dureeMin;
 }
@@ -533,9 +544,10 @@ function parseEditsFromTable(){
     const nb0=int('nb0'),nb6=int('nb6'),nb7=int('nb7'),nb8=int('nb8'),nb9=int('nb9'),nb10=int('nb10');
     const total=nb0+nb6+nb7+nb8+nb9+nb10; const pts=nb6*6+nb7*7+nb8*8+nb9*9+nb10*10;
     const indice= total>0 ? +(((pts/total)/10*100).toFixed(2)) : 0;
+    // sexe déjà normalisé à la saisie, mais on sécurise:
+    const sx=(txt('sexe')||'').toUpperCase(); const sexe = (sx==='M'||sx==='F')?sx:'F';
     return { nom:txt('nom'), prenom:txt('prenom'), classe:txt('classe'),
-      sexe:(txt('sexe')||'').toUpperCase()==='M'?'M':(txt('sexe')||'').toUpperCase()==='F'?'F':'',
-      distance:int('distance'), nb0,nb6,nb7,nb8,nb9,nb10, indice_arc:indice };
+      sexe, distance:int('distance'), nb0,nb6,nb7,nb8,nb9,nb10, indice_arc:indice };
   });
 }
 qs('#activateProf').onclick=()=>{ const code=(qs('#profCode').value||'').trim(); if(code===PROF_CODE){ profMode=true; renderSummary(); } else { showToast('Code incorrect.'); } };
@@ -547,6 +559,7 @@ qs('#backToCourse').onclick=()=> show('course');
 
 /* ================== Rendu global ================== */
 function renderAll(){ renderLaps(); renderAllowances(); renderShots(); renderSummaryCounters(); }
+function resetRunnerState(){ session.laps=0; session.shots=[]; session.frac=0; renderAll(); hideEnd(); setAdvice(''); }
 
 /* ================== Conseils init ================== */
 function setAdvice(t){ qs('#adviceTxt').textContent = (t&&t.trim())? t : '—'; }
