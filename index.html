@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>arcAthlon-V2 — Compact Gym V2.8</title>
+<title>arcAthlon-V2 — Compact Gym V2.9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -25,6 +25,7 @@
   p{margin:6px 0; color:var(--muted)}
   .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--ring); padding:14px}
   .hidden{display:none!important}
+  [hidden]{display:none!important} /* Sécurité native si CSS en panne */
 
   .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center}
   button{border:0; border-radius:16px; font-weight:800; cursor:pointer}
@@ -90,6 +91,23 @@
   .endbar{margin-top:10px; text-align:center}
   .endbar .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px}
 
+  /* Modales */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:80;
+    background:linear-gradient(180deg,rgba(2,6,23,.55),rgba(2,6,23,.35));}
+  .modal.show{display:flex;}
+  .modal-card{background:#fff; border-radius:20px; max-width:900px; width:92%; overflow:hidden; box-shadow:0 12px 48px rgba(2,6,23,.25)}
+  .modal-head{display:flex; align-items:center; gap:12px; padding:16px 18px; color:#fff; font-weight:800}
+  .modal-head.help{background:linear-gradient(90deg,#0a58ff,#7c3aed)}
+  .modal-head.safe{background:linear-gradient(90deg,#22c55e,#0ea5e9)}
+  .modal-head.indice{background:linear-gradient(90deg,#111827,#0a58ff)}
+  .modal-head.prof{background:linear-gradient(90deg,#0a58ff,#22c55e)}
+  .modal-body{padding:18px}
+  .modal-body h4{margin:12px 0 6px}
+  .help-list{margin:8px 0 12px; line-height:1.55}
+  .help-list li{margin:6px 0}
+
+  .confirmbar .mini{padding:8px 10px; font-size:16px; border-radius:10px}
+
   footer{margin-top:auto; padding:10px; text-align:center; color:var(--muted)}
 </style>
 </head>
@@ -114,7 +132,7 @@
     </section>
 
     <!-- SAISIE -->
-    <section id="view-setup" class="card hidden">
+    <section id="view-setup" class="card hidden" hidden>
       <h2>Paramètres & coureurs</h2>
       <div class="grid g2">
         <div>
@@ -171,7 +189,7 @@
     </section>
 
     <!-- COURSE -->
-    <section id="view-course" class="hidden">
+    <section id="view-course" class="hidden" hidden>
       <div class="card">
         <div class="btns" style="justify-content:space-between; gap:8px">
           <button id="backSetup" class="b-slate btn-lg">⬅ Saisie</button>
@@ -198,7 +216,7 @@
         <p class="muted" style="text-align:center">Durée cible : <b id="target"></b> min</p>
 
         <!-- Bandeau simple Zone 2 (3 flèches) -->
-        <div id="zone2Banner" class="banner zone2 hidden">3 flèches en Zone 2</div>
+        <div id="zone2Banner" class="banner zone2 hidden" hidden>3 flèches en Zone 2</div>
       </div>
 
       <div class="grid g2" style="margin-top:10px">
@@ -261,7 +279,7 @@
       </div>
 
       <!-- Bandeau fin de temps (fraction + action) -->
-      <div class="card endbar hidden" id="endBar">
+      <div class="card endbar hidden" id="endBar" hidden>
         <h3>⏱️ Temps écoulé — fraction de tour</h3>
         <div class="actions">
           <button class="b-slate btn-lg" data-frac="0">+ 0</button>
@@ -275,7 +293,7 @@
     </section>
 
     <!-- BILAN / QR -->
-    <section id="view-summary" class="card hidden" style="text-align:center">
+    <section id="view-summary" class="card hidden" style="text-align:center" hidden>
       <h2>Bilan — QR compatible ScanProf</h2>
       <div id="qr" class="card" style="display:inline-block"></div>
 
@@ -303,8 +321,8 @@
 
   <footer>ArcAthlon - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
 
-  <!-- Modales info -->
-  <div class="modal" id="modalHelp">
+  <!-- Modales info (toutes cachées par défaut avec hidden) -->
+  <div class="modal" id="modalHelp" hidden>
     <div class="modal-card">
       <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — arcAthlon-V2</span></div>
       <div class="modal-body">
@@ -320,7 +338,7 @@
     </div>
   </div>
 
-  <div class="modal" id="modalSafety">
+  <div class="modal" id="modalSafety" hidden>
     <div class="modal-card">
       <div class="modal-head safe"><span>🛟</span><span>Fiche sécurité</span></div>
       <div class="modal-body">
@@ -345,7 +363,7 @@
     </div>
   </div>
 
-  <div class="modal" id="modalIndice">
+  <div class="modal" id="modalIndice" hidden>
     <div class="modal-card">
       <div class="modal-head indice"><span>🎯</span><span>Indice arc — explication</span></div>
       <div class="modal-body">
@@ -363,7 +381,7 @@
   </div>
 
   <!-- Modal Paramètres Prof -->
-  <div class="modal" id="modalProf">
+  <div class="modal" id="modalProf" hidden>
     <div class="modal-card">
       <div class="modal-head prof"><span>⚙️</span><span>Paramètres Prof — arcAthlon-V2</span></div>
       <div class="modal-body">
@@ -375,7 +393,7 @@
           </div>
           <p class="muted">Astuce : ce paramétrage s’applique à la prochaine session (jusqu’au rechargement).</p>
         </div>
-        <div id="profPanel" class="hidden">
+        <div id="profPanel" class="hidden" hidden>
           <h4>Auto-aide “Zone 2”</h4>
           <div class="grid g2">
             <div>
@@ -417,12 +435,28 @@ const PROF_CODE = '57'; // code prof
 /* ================== Helpers ================== */
 const qs = sel => document.querySelector(sel);
 const V = { cover: qs('#view-cover'), setup: qs('#view-setup'), course: qs('#view-course'), summary: qs('#view-summary') };
-function show(name){ Object.values(V).forEach(v=>v.classList.add('hidden')); V[name].classList.remove('hidden'); window.scrollTo(0,0); }
+function show(name){
+  Object.values(V).forEach(v=>{ v.classList.add('hidden'); v.setAttribute('hidden',''); });
+  const target = V[name];
+  if(target){ target.classList.remove('hidden'); target.removeAttribute('hidden'); }
+  closeModals();
+  window.scrollTo(0,0);
+}
 function showToast(msg, ms=1600){ const t=qs('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast.t); showToast.t=setTimeout(()=>t.classList.remove('show'),ms); }
 
 /* ================== Modales ================== */
-function openModal(id){ qs('#'+id).classList.add('show'); }
-function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
+function openModal(id){
+  const m = document.getElementById(id);
+  if(!m) return;
+  m.classList.add('show');
+  m.removeAttribute('hidden');
+}
+function closeModals(){
+  document.querySelectorAll('.modal').forEach(m=>{
+    m.classList.remove('show');
+    m.setAttribute('hidden','');
+  });
+}
 document.addEventListener('click', (e)=>{ if(e.target.matches('[data-close]')) closeModals(); });
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModals(); });
 
@@ -477,8 +511,8 @@ function fillProfPanelFromConfig(){
 qs('#profUnlock').onclick = ()=>{
   const code = (qs('#profCodeGate').value||'').trim();
   if(code === String(PROF_CODE)){
-    qs('#profGate').classList.add('hidden');
-    qs('#profPanel').classList.remove('hidden');
+    qs('#profGate').classList.add('hidden'); qs('#profGate').setAttribute('hidden','');
+    const panel = qs('#profPanel'); panel.classList.remove('hidden'); panel.removeAttribute('hidden');
     fillProfPanelFromConfig();
   }else{
     showToast('Code incorrect.');
@@ -491,14 +525,12 @@ const session={
   p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3},
   active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}
 };
-// états globaux
 let raceRunning = false;     // chrono lancé
 let timeOver    = false;     // temps écoulé → verrous
 let running     = false;     // timer actif
 let timer=null, t0=0, elapsed=0;
 let phase = 'runner1';       // 'runner1' -> 'runner2' -> 'done'
-// Zone 2 simplifiée (affichage 3 flèches à consommer)
-let zone2ShotsRemaining = 0;
+let zone2ShotsRemaining = 0; // 3 flèches à consommer en Zone 2 (si programmées)
 
 /* ================== Entrée en course ================== */
 qs('#goCourse').onclick=()=>{
@@ -511,6 +543,7 @@ qs('#goCourse').onclick=()=>{
   session.rules.fb=+document.getElementById('fleches_bloc').value;
 
   phase='runner1'; session.active='p1';
+  resetAdviceHistory();                  // conseils frais pour coureur 1
   zone2ShotsRemaining = 0;
   timeOver=false; raceRunning=false; running=false; elapsed=0;
 
@@ -529,7 +562,7 @@ function start(){
   qs('#btnStartChrono').disabled=true;
   qs('#btnPause').disabled=false;
   qs('#btnReset').disabled=false;
-  // on évite de sortir vers la saisie pendant la course
+  // pas de retour saisie pendant une course
   qs('#backSetup').disabled=true;
 }
 function pause(){
@@ -541,9 +574,9 @@ function pause(){
 function reset(){
   pause();
   elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
-  if(timeOver) return; // si temps fini, on ne ré-ouvre pas
+  if(timeOver) return; // si temps fini, on ne rouvre pas
   session.laps=0; session.shots=[]; session.frac=0;
-  zone2ShotsRemaining=0; renderAll(); hideEndBar(); adviceHistory.length=0; setAdvice('');
+  zone2ShotsRemaining=0; renderAll(); hideEndBar(); resetAdviceHistory(); setAdvice('');
   updateZoneVisuals();
 }
 function tick(){
@@ -653,7 +686,9 @@ function maybeScheduleAssistForNextVolley(){
 }
 function updateZoneVisuals(){
   zoneBadge.textContent = 'Zone 1';
-  qs('#zone2Banner').classList.toggle('hidden', zone2ShotsRemaining<=0);
+  const z2 = qs('#zone2Banner');
+  if(zone2ShotsRemaining>0){ z2.classList.remove('hidden'); z2.removeAttribute('hidden'); }
+  else { z2.classList.add('hidden'); z2.setAttribute('hidden',''); }
 }
 
 /* ================== Indice & compteurs ================== */
@@ -684,12 +719,13 @@ function buildAdviceTypes(context){
 }
 function setAdvice(t){ adviceTxt.textContent = (t&&t.trim())? t : '—'; }
 function setAdviceSmart(context){ const types=buildAdviceTypes(context); types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift(); const max=(context==='end')?3:2; setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' ')); }
+function resetAdviceHistory(){ adviceHistory.length = 0; }
 
 /* ================== Fin de temps : bandeau ================== */
 const endBar=qs('#endBar'), endActionBtn=qs('#endAction'), distanceOut=qs('#distanceOut');
 document.querySelectorAll('[data-frac]').forEach(b=> b.onclick=()=>{ if(!timeOver) return; session.frac=+b.getAttribute('data-frac'); updateDistanceOut(); });
-function showEndBar(){ endBar.classList.remove('hidden'); updateDistanceOut(); endActionBtn.textContent = (phase==='runner1') ? '➡️ Coureur suivant' : '📊 Voir le bilan'; if(navigator.vibrate) navigator.vibrate(120); }
-function hideEndBar(){ endBar.classList.add('hidden'); }
+function showEndBar(){ endBar.classList.remove('hidden'); endBar.removeAttribute('hidden'); updateDistanceOut(); endActionBtn.textContent = (phase==='runner1') ? '➡️ Coureur suivant' : '📊 Voir le bilan'; if(navigator.vibrate) navigator.vibrate(120); }
+function hideEndBar(){ endBar.classList.add('hidden'); endBar.setAttribute('hidden',''); }
 function updateDistanceOut(){ const meters=Math.round((session.laps+(session.frac||0))*session.tourM); distanceOut.textContent=`Distance : ${meters} m`; }
 
 endActionBtn.onclick = ()=>{
@@ -712,15 +748,15 @@ function finalizeRunnerPartial(){
 }
 
 function prepareNextRunner(which){
-  // reset strict pour 2e coureur
   session.active=which;
+  resetAdviceHistory();               // conseils frais pour coureur 2
   raceRunning=false; timeOver=false; running=false; clearInterval(timer); elapsed=0; clockEl.textContent='00:00.0';
   session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
   disableRaceInputs(false);
   hideEndBar();
   qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
-  qs('#backSetup').disabled=true; // pas de retour saisie pendant le déroulé
-  paintHeader(); paintRunnerBadge(); renderAll(); updateZoneVisuals();
+  qs('#backSetup').disabled=true; // on reste dans le flux
+  paintHeader(); paintRunnerBadge(); renderAll(); updateZoneVisuals(); setAdvice('');
 }
 
 /* ================== Résumé / QR / CSV ================== */
@@ -797,7 +833,7 @@ function resetRunnerState(hard=false){
     qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
   }
   session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
-  disableRaceInputs(false); hideEndBar(); setAdvice('');
+  disableRaceInputs(false); hideEndBar(); resetAdviceHistory(); setAdvice('');
   updateZoneVisuals(); renderAll();
 }
 validate(); setAdvice('');
