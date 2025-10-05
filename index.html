@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ArcAthlon-V2</title>
+<title>arcAthlon-V2 — Compact Gym V2.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -54,10 +54,9 @@
   .bigNum{font-size:48px; font-weight:900}
   .kpi{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
   .kchip{padding:8px 12px; border-radius:12px; font-weight:800}
-  /* Couleurs demandées pour Autorisées / Tirées / Restantes */
-  .kchip.allowed{background:#dbeafe; color:#0b1220;}   /* bleu clair */
-  .kchip.shot{background:#ede9fe; color:#111827;}      /* violet clair */
-  .kchip.remain{background:#dcfce7; color:#065f46;}    /* vert clair */
+  .kchip.allowed{background:#dbeafe; color:#0b1220;}   /* Autorisées: bleu doux */
+  .kchip.shot{background:#ede9fe; color:#111827;}      /* Tirées: violet doux */
+  .kchip.remain{background:#dcfce7; color:#065f46;}    /* Restantes: vert doux */
   .glow{animation:pulse 1s infinite alternate}
   @keyframes pulse{from{box-shadow:0 0 0 rgba(34,197,94,0)} to{box-shadow:0 0 18px rgba(34,197,94,.55)}}
 
@@ -78,28 +77,18 @@
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px)}
 
   .banner{background:#fff7ed; border:2px dashed #f59e0b; color:#7c2d12; border-radius:12px; padding:8px 10px; text-align:center; font-weight:800}
-  .banner.ok{background:#ecfeff; border-color:#06b6d4; color:#155e75}
+  .banner.zone2{background:#ecfeff; border-color:#06b6d4; color:#155e75}
 
-  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:80;
-    background:linear-gradient(180deg,rgba(2,6,23,.55),rgba(2,6,23,.35));}
-  .modal.show{display:flex;}
-  .modal-card{background:#fff; border-radius:20px; max-width:900px; width:92%; overflow:hidden; box-shadow:0 12px 48px rgba(2,6,23,.25)}
-  .modal-head{display:flex; align-items:center; gap:12px; padding:16px 18px; color:#fff; font-weight:800}
-  .modal-head.help{background:linear-gradient(90deg,#0a58ff,#7c3aed)}
-  .modal-head.safe{background:linear-gradient(90deg,#22c55e,#0ea5e9)}
-  .modal-head.indice{background:linear-gradient(90deg,#111827,#0a58ff)}
-  .modal-head.prof{background:linear-gradient(90deg,#0a58ff,#22c55e)}
-  .modal-body{padding:18px}
-  .modal-body h4{margin:12px 0 6px}
-  .help-list{margin:8px 0 12px; line-height:1.55}
-  .help-list li{margin:6px 0}
+  /* Bloc prénom unique (centré, vert, texte blanc) */
+  .runnerBadge{
+    display:flex; align-items:center; justify-content:center;
+    margin:8px auto 0; min-height:56px; padding:10px 18px; max-width:420px;
+    background:var(--green); color:#fff; border-radius:16px; font-weight:900; font-size:22px; text-transform:uppercase;
+  }
 
-  .confirmbar{display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:8px}
-  .confirmbar .mini{padding:8px 10px; font-size:16px; border-radius:10px}
-
-  /* Centrage et style des boutons prénoms */
-  .runner-switch{display:flex; justify-content:center; gap:12px; flex-wrap:wrap}
-  .runner-switch .btn-lg{min-width:240px; text-transform:uppercase; letter-spacing:.3px}
+  /* Bandeau fin de temps (fraction + action) */
+  .endbar{margin-top:10px; text-align:center}
+  .endbar .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px}
 
   footer{margin-top:auto; padding:10px; text-align:center; color:var(--muted)}
 </style>
@@ -109,14 +98,12 @@
     <!-- ACCUEIL -->
     <section id="view-cover" class="card hero">
       <div style="width:100%; max-width:640px; margin:0 auto;">
-        <h1>ArcAthlon-V2</h1>
+        <h1>arcAthlon-V2</h1>
         <p class="muted">EPS • ScanProf ready</p>
 
-        <!-- Démarrer sous le titre -->
         <div class="btns" style="margin-top:14px">
           <button id="btnStartApp" class="b-primary btn-xxl">▶️ Démarrer</button>
         </div>
-        <!-- Autres boutons en dessous -->
         <div class="btns" style="margin-top:10px">
           <button id="btnHelp" class="b-slate btn-lg">ℹ️ Aide</button>
           <button id="btnSafety" class="b-ghost btn-lg">🛟 Fiche sécurité</button>
@@ -190,10 +177,13 @@
           <button id="backSetup" class="b-slate btn-lg">⬅ Saisie</button>
           <span class="pill" id="metaRunner">—</span>
         </div>
-        <h2 id="runnerTitle">Coureur — </h2>
+        <h2 id="runnerTitle">—</h2>
+
+        <!-- Prénom unique en gros bloc vert -->
+        <div id="runnerBadge" class="runnerBadge">—</div>
 
         <div class="btns" style="margin:6px 0">
-          <span class="pill" id="zoneBadge">Zone actuelle : Zone 1</span>
+          <span class="pill" id="zoneBadge">Zone 1</span>
         </div>
 
         <!-- Chrono -->
@@ -207,22 +197,8 @@
         </div>
         <p class="muted" style="text-align:center">Durée cible : <b id="target"></b> min</p>
 
-        <!-- Switch coureurs (prénoms) -->
-        <div class="runner-switch" style="margin:8px 0">
-          <button id="pickP1" class="b-green btn-lg">👟 Coureur 1</button>
-          <button id="pickP2" class="b-green btn-lg">👟 Coureur 2</button>
-          <label style="margin-left:auto"><input type="checkbox" id="assist_blocked_live"> Bloquer auto-aide</label>
-        </div>
-
-        <!-- Bannières auto-aide -->
-        <div id="assistBannerNext" class="banner hidden">Prochaine volée : Zone 2 (aide)</div>
-        <!-- Toujours visible : reflète la zone de la VOLÉE en cours -->
-        <div id="assistBannerNow" class="banner ok">Volée en Zone 1</div>
-        <div id="assistConfirm" class="confirmbar hidden">
-          <span class="pill">Confirmer Zone 2 ?</span>
-          <button id="assistYes" class="b-green mini">✔️ Appliquer</button>
-          <button id="assistNo" class="b-slate mini">✖️ Ignorer</button>
-        </div>
+        <!-- Bandeau simple Zone 2 (3 flèches) -->
+        <div id="zone2Banner" class="banner zone2 hidden">3 flèches en Zone 2</div>
       </div>
 
       <div class="grid g2" style="margin-top:10px">
@@ -250,7 +226,6 @@
             <span class="kchip">Indice : <b id="indiceArc">0</b>%</span>
           </div>
 
-          <!-- Conseil -->
           <div class="advice" id="adviceBox">
             <span class="ad-badge">Conseil</span>
             <div class="ad-text" id="adviceTxt">—</div>
@@ -285,20 +260,17 @@
         </div>
       </div>
 
-      <div class="card hidden" id="endCard" style="margin-top:10px; text-align:center">
+      <!-- Bandeau fin de temps (fraction + action) -->
+      <div class="card endbar hidden" id="endBar">
         <h3>⏱️ Temps écoulé — fraction de tour</h3>
-        <div class="btns" style="margin-top:6px">
+        <div class="actions">
           <button class="b-slate btn-lg" data-frac="0">+ 0</button>
           <button class="b-slate btn-lg" data-frac="0.25">+ 1/4</button>
           <button class="b-slate btn-lg" data-frac="0.5">+ 1/2</button>
           <button class="b-slate btn-lg" data-frac="0.75">+ 3/4</button>
-          <button class="b-green btn-xl" id="finishRunner">✅ Terminer</button>
+          <button class="b-green btn-xl" id="endAction">➡️ Continuer</button>
         </div>
         <p class="muted" id="distanceOut">Distance : — m</p>
-      </div>
-
-      <div class="btns hidden" id="toSummaryWrap" style="margin:10px 0">
-        <button class="b-primary btn-xl" id="goSummary">📊 Bilan</button>
       </div>
     </section>
 
@@ -334,14 +306,14 @@
   <!-- Modales info -->
   <div class="modal" id="modalHelp">
     <div class="modal-card">
-      <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — ArcAthlon-V2</span></div>
+      <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — arcAthlon-V2</span></div>
       <div class="modal-body">
         <ol class="help-list">
           <li>Saisir pour chaque élève : <strong>Prénom</strong>, <strong>Nom</strong>, <strong>Classe</strong>, <strong>Sexe</strong>.</li>
           <li>Régler <strong>Durée</strong>, <strong>Longueur tour</strong>, et la règle <strong>Tours → Flèches</strong>.</li>
           <li>En course : <strong>Start/Pause</strong> le chrono ; <strong>+1 / −1</strong> pour les tours.</li>
           <li>Le tir est débloqué par <strong>blocs</strong> (selon la règle). Scores : <b>0,6,7,8,9,10</b>.</li>
-          <li>Fin du temps : compléter la <strong>fraction de tour</strong>, valider, puis générer <strong>QR</strong> et <strong>CSV</strong>.</li>
+          <li>Fin du temps : compléter la <strong>fraction de tour</strong>, enchaîner sur le <strong>coureur suivant</strong> puis voir le <strong>bilan</strong>.</li>
         </ol>
         <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
       </div>
@@ -393,7 +365,7 @@
   <!-- Modal Paramètres Prof -->
   <div class="modal" id="modalProf">
     <div class="modal-card">
-      <div class="modal-head prof"><span>⚙️</span><span>Paramètres Prof — ArcAthlon-V2</span></div>
+      <div class="modal-head prof"><span>⚙️</span><span>Paramètres Prof — arcAthlon-V2</span></div>
       <div class="modal-body">
         <div id="profGate">
           <p><b>Code Prof</b> requis :</p>
@@ -420,14 +392,14 @@
               <input id="cfg_thrSum" type="number" min="0" step="1" value="20">
             </div>
             <div>
-              <label><input type="checkbox" id="cfg_manual"> Confirmation manuelle (Appliquer/Ignorer)</label>
+              <label class="muted"><input type="checkbox" id="cfg_manual" disabled> Confirmation manuelle (désactivée dans ce mode simplifié)</label>
             </div>
           </div>
           <div class="btns" style="margin-top:10px">
             <button id="profSave" class="b-green btn-lg">💾 Enregistrer</button>
             <button class="b-slate btn-lg" data-close>Fermer</button>
           </div>
-          <p class="muted">La Zone 2 s’applique pour <b>une seule volée</b> (3 flèches), puis retour en Zone 1.</p>
+          <p class="muted">La Zone 2 s’applique pour <b>3 flèches</b> (volée suivante), puis retour automatique visuel en Zone 1.</p>
         </div>
       </div>
     </div>
@@ -467,7 +439,7 @@ qs('#goHome').onclick      = ()=> show('cover');
 qs('#backSetup').onclick   = ()=> show('setup');
 qs('#backHome2').onclick   = ()=> show('cover');
 
-/* ================== Validation saisie (Sexe obligatoire) ================== */
+/* ================== Validation saisie ================== */
 function clean(s){ return (s||'').replace(/\s+/g,' ').trim(); }
 function val(id){ return clean(document.getElementById(id).value); }
 function okNum(v,min){ const n=+v; return Number.isFinite(n) && n>=min; }
@@ -490,27 +462,18 @@ qs('#preset33').onclick = ()=>{ document.getElementById('tours_bloc').value=3; d
 qs('#preset11').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=1; validate(); };
 qs('#preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=3; validate(); };
 
-/* ================== Stockage config prof (mémoire simple) ================== */
-const profConfig = {
-  enabled: true,
-  thrZeros: 3,
-  thrSum: 20,
-  manual: false
-};
+/* ================== Panel Prof (seuils) ================== */
+const profConfig = { enabled:true, thrZeros:3, thrSum:20, manual:false };
 function applyProfPanelToConfig(){
   profConfig.enabled = qs('#cfg_enabled').checked;
   profConfig.thrZeros = Math.max(1, +qs('#cfg_thrZeros').value || 3);
   profConfig.thrSum   = Math.max(0, +qs('#cfg_thrSum').value || 20);
-  profConfig.manual   = qs('#cfg_manual').checked;
 }
 function fillProfPanelFromConfig(){
   qs('#cfg_enabled').checked = profConfig.enabled;
   qs('#cfg_thrZeros').value  = profConfig.thrZeros;
   qs('#cfg_thrSum').value    = profConfig.thrSum;
-  qs('#cfg_manual').checked  = profConfig.manual;
 }
-
-/* Déverrouillage panel prof */
 qs('#profUnlock').onclick = ()=>{
   const code = (qs('#profCodeGate').value||'').trim();
   if(code === String(PROF_CODE)){
@@ -521,63 +484,84 @@ qs('#profUnlock').onclick = ()=>{
     showToast('Code incorrect.');
   }
 };
-qs('#profSave').onclick = ()=>{
-  applyProfPanelToConfig();
-  showToast('Paramètres Prof enregistrés.');
-};
+qs('#profSave').onclick = ()=>{ applyProfPanelToConfig(); showToast('Paramètres Prof enregistrés.'); };
 
-/* ================== Session ================== */
+/* ================== Session & états course ================== */
 const session={
   p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3},
-  active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false,
-  assist:{enabled:true, thrZeros:3, thrSum:20, manual:false, blocked:false, nextVolley:false, currentVolley:false, pending:false}
+  active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}
 };
+// états globaux
+let raceRunning = false;     // chrono lancé
+let timeOver    = false;     // temps écoulé → verrous
+let running     = false;     // timer actif
+let timer=null, t0=0, elapsed=0;
+let phase = 'runner1';       // 'runner1' -> 'runner2' -> 'done'
+// Zone 2 simplifiée (affichage 3 flèches à consommer)
+let zone2ShotsRemaining = 0;
 
+/* ================== Entrée en course ================== */
 qs('#goCourse').onclick=()=>{
   if(!validate()){ showToast('Complétez tous les champs (dont Sexe).'); return; }
   function sex(id){ const s=(val(id)||'').toUpperCase(); return s==='M'?'M':'F'; }
   session.p1={ prenom:val('p1_prenom'), nom:val('p1_nom'), classe:val('p1_classe'), sexe:sex('p1_sexe') };
   session.p2={ prenom:val('p2_prenom'), nom:val('p2_nom'), classe:val('p2_classe'), sexe:sex('p2_sexe') };
-
   session.dureeMin=+val('duree_min'); session.tourM=+val('tour_m');
   session.rules.tb=+document.getElementById('tours_bloc').value;
   session.rules.fb=+document.getElementById('fleches_bloc').value;
 
-  // Appliquer la config prof à la session
-  Object.assign(session.assist, {
-    enabled: profConfig.enabled,
-    thrZeros: profConfig.thrZeros,
-    thrSum: profConfig.thrSum,
-    manual: profConfig.manual,
-    blocked: false, nextVolley:false, currentVolley:false, pending:false
-  });
-  qs('#assist_blocked_live').checked = false;
+  phase='runner1'; session.active='p1';
+  zone2ShotsRemaining = 0;
+  timeOver=false; raceRunning=false; running=false; elapsed=0;
 
-  // Prénoms sur boutons
-  qs('#pickP1').textContent = '👟 ' + session.p1.prenom;
-  qs('#pickP2').textContent = '👟 ' + session.p2.prenom;
-
-  session.active='p1'; resetRunnerState(); paintHeader(); show('course');
+  resetRunnerState(true); // hard
+  paintHeader(); paintRunnerBadge(); show('course');
 };
 
 /* ================== Chrono ================== */
 const clockEl=qs('#clock'), targetEl=qs('#target');
-let t0=0, elapsed=0, timer=null, running=false;
-function start(){ if(session.finished||running) return; running=true; t0=Date.now()-elapsed; timer=setInterval(tick,100);
-  qs('#btnStartChrono').disabled=true; qs('#btnPause').disabled=false; qs('#btnReset').disabled=false; }
-function pause(){ if(!running) return; running=false; clearInterval(timer);
-  qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; }
-function reset(){ pause(); elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
-  session.laps=0; session.shots=[]; session.frac=0;
-  Object.assign(session.assist, {nextVolley:false, currentVolley:false, pending:false, blocked:false});
-  renderAll(); hideEnd(); adviceHistory.length=0; setAdvice(''); banners(); updateZoneBadge(); }
-function tick(){ elapsed=Date.now()-t0; const cs=Math.floor(elapsed/100); const m=Math.floor(cs/600), s=Math.floor((cs%600)/10), d=cs%10;
-  clockEl.textContent=`${m<10?'0':''}${m}:${s<10?'0':''}${s}.${d}`; if(m>=session.dureeMin){ pause(); showEnd(); setAdviceSmart('end'); } }
 qs('#btnStartChrono').onclick=start; qs('#btnPause').onclick=pause; qs('#btnReset').onclick=reset;
+function start(){
+  if(running) return;
+  running=true; raceRunning=true;
+  t0 = Date.now() - elapsed;
+  timer = setInterval(tick,100);
+  qs('#btnStartChrono').disabled=true;
+  qs('#btnPause').disabled=false;
+  qs('#btnReset').disabled=false;
+  // on évite de sortir vers la saisie pendant la course
+  qs('#backSetup').disabled=true;
+}
+function pause(){
+  if(!running) return;
+  running=false; clearInterval(timer);
+  qs('#btnStartChrono').disabled=false;
+  qs('#btnPause').disabled=true;
+}
+function reset(){
+  pause();
+  elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
+  if(timeOver) return; // si temps fini, on ne ré-ouvre pas
+  session.laps=0; session.shots=[]; session.frac=0;
+  zone2ShotsRemaining=0; renderAll(); hideEndBar(); adviceHistory.length=0; setAdvice('');
+  updateZoneVisuals();
+}
+function tick(){
+  elapsed=Date.now()-t0;
+  const cs=Math.floor(elapsed/100); const m=Math.floor(cs/600), s=Math.floor((cs%600)/10), d=cs%10;
+  clockEl.textContent=`${m<10?'0':''}${m}:${s<10?'0':''}${s}.${d}`;
+  if(m>=session.dureeMin){
+    pause();
+    timeOver=true;
+    disableRaceInputs(true);
+    showEndBar();
+    setAdviceSmart('end');
+  }
+}
 
 /* ================== UI header ================== */
 const runnerTitle=qs('#runnerTitle'), metaRunner=qs('#metaRunner'), lapMetersEl=qs('#lapMeters'),
-      lapsEl=qs('#laps'), liveDistanceEl=qs('#liveDistance'), zoneBadge=qs('#zoneBadge');
+      lapsEl=qs('#laps'), liveDistanceEl=qs('#liveDistance'), zoneBadge=qs('#zoneBadge'), runnerBadge=qs('#runnerBadge');
 function paintHeader(){
   const R=session[session.active];
   runnerTitle.textContent=`${R.prenom} ${R.nom}`;
@@ -585,14 +569,23 @@ function paintHeader(){
   lapMetersEl.textContent=session.tourM;
   targetEl.textContent=session.dureeMin;
 }
+function paintRunnerBadge(){ const R=session[session.active]; runnerBadge.textContent = (R?.prenom || '—'); }
 
-/* ================== Runners switch ================== */
-qs('#pickP1').onclick=()=> switchRunner('p1');
-qs('#pickP2').onclick=()=> switchRunner('p2');
-const temp={ p1:{laps:0,frac:0,shots:[], assist:{next:false,now:false,pending:false}}, p2:{laps:0,frac:0,shots:[], assist:{next:false,now:false,pending:false}} };
-function saveTemp(){ temp[session.active]={ laps:session.laps, frac:session.frac, shots:JSON.parse(JSON.stringify(session.shots)), assist:{next:session.assist.nextVolley, now:session.assist.currentVolley, pending:session.assist.pending} }; }
-function loadTemp(){ const t=temp[session.active]; session.laps=t.laps; session.frac=t.frac; session.shots=JSON.parse(JSON.stringify(t.shots)); session.assist.nextVolley=t.assist.next; session.assist.currentVolley=t.assist.now; session.assist.pending=t.assist.pending; renderAll(); hideEnd(); banners(); updateZoneBadge(); }
-function switchRunner(which){ if(session.finished) return; saveTemp(); session.active=which; reset(); paintHeader(); loadTemp(); }
+/* ================== Rendu & verrous ================== */
+function renderAll(){ renderLaps(); renderAllowances(); renderShots(); renderSummaryCounters(); }
+function disableRaceInputs(disabled){
+  qs('#lapPlus').disabled  = disabled;
+  qs('#lapMinus').disabled = disabled;
+  document.querySelectorAll('#scoreButtons button').forEach(b=> b.disabled = disabled);
+}
+
+/* ================== Tours ================== */
+qs('#lapPlus').onclick=()=>{ if(timeOver || !raceRunning) return showToast('Action indisponible.');
+  const allowed=calcAllowedShots(); const pending=allowed-session.shots.length;
+  if(pending>0){ showToast(`D'abord tirer ${pending} flèche${pending>1?'s':''}`); return; } session.laps++; renderAll(); };
+qs('#lapMinus').onclick=()=>{ if(timeOver || !raceRunning) return showToast('Action indisponible.');
+  session.laps=Math.max(0,session.laps-1); renderAll(); };
+function renderLaps(){ lapsEl.textContent=session.laps; liveDistanceEl.textContent=Math.round((session.laps+(session.frac||0))*session.tourM); }
 
 /* ================== Règles Tours → Flèches ================== */
 function calcAllowedShots(){ const {tb,fb}=session.rules; const blocs=Math.floor(session.laps/tb); return blocs*fb; }
@@ -601,20 +594,14 @@ function renderAllowances(){
   const allowed=calcAllowedShots(); const remain=Math.max(0,allowed-session.shots.length);
   allowedEl.textContent=allowed; shotCountEl.textContent=session.shots.length; remainEl.textContent=remain;
   if(remain>0) remainChip.classList.add('glow'); else remainChip.classList.remove('glow');
-  qs('#lapPlus').disabled = (remain>0);
+  qs('#lapPlus').disabled = (remain>0) || timeOver;
 }
 
-/* ================== Tours ================== */
-qs('#lapPlus').onclick=()=>{ if(session.finished) return; const allowed=calcAllowedShots(); const pending=allowed-session.shots.length;
-  if(pending>0){ showToast(`D'abord tirer ${pending} flèche${pending>1?'s':''}`); return; } session.laps++; renderAll(); };
-qs('#lapMinus').onclick=()=>{ if(session.finished) return; session.laps=Math.max(0,session.laps-1); renderAll(); };
-function renderLaps(){ lapsEl.textContent=session.laps; liveDistanceEl.textContent=Math.round((session.laps+(session.frac||0))*session.tourM); }
-
-/* ================== Tir + Auto-aide Zone 2 ================== */
+/* ================== Tir + Zone 2 (3 flèches) ================== */
 const shotsTable=qs('#shotsTable');
 document.querySelectorAll('#scoreButtons [data-score]').forEach(btn=>{
   btn.onclick=()=>{
-    if(session.finished) return;
+    if(timeOver || !raceRunning) return showToast('Action indisponible.');
     const allowed=calcAllowedShots();
     if(session.shots.length>=allowed){
       const need = session.rules.tb - (session.laps % session.rules.tb || session.rules.tb);
@@ -622,39 +609,36 @@ document.querySelectorAll('#scoreButtons [data-score]').forEach(btn=>{
     }
     const score=+btn.getAttribute('data-score');
     const fb=session.rules.fb;
-    const isNewVolley = (session.shots.length % fb === 0); // 1ère flèche d'une volée
-    if(isNewVolley){
-      // appliquer zone 2 si programmée pour cette volée
-      if(session.assist.nextVolley){
-        if(session.assist.manual && !session.assist.pending){
-          session.assist.pending = true; // on affiche la barre de confirmation
-          banners(); // montrera confirmbar
-        }else if(!session.assist.manual){
-          session.assist.currentVolley = true; session.assist.nextVolley=false; banners(); updateZoneBadge();
-        }
-      }else{
-        session.assist.currentVolley = false; updateZoneBadge(); banners();
-      }
+
+    addShot(score);
+    setAdviceSmart('shot');
+
+    // Consommer Z2 si actif
+    if(zone2ShotsRemaining>0){
+      zone2ShotsRemaining--;
+      updateZoneVisuals();
     }
-    addShot(score); setAdviceSmart('shot');
-    // Si fin de volée, évaluer pour la prochaine et repasser Zone 1
+
+    // Fin de volée -> évaluer aide pour la prochaine volée (programmation Z2)
     if(session.shots.length % fb === 0){
-      // fin de la volée en cours -> Zone 1
-      session.assist.currentVolley = false;
-      banners(); updateZoneBadge();
-      // évalue si la prochaine volée doit être en Zone 2
       maybeScheduleAssistForNextVolley();
     }
   };
 });
-function addShot(score){ session.shots.push({n:session.shots.length+1, score}); renderShots(); renderAllowances(); renderSummaryCounters(); }
+function addShot(score){
+  session.shots.push({n:session.shots.length+1, score});
+  renderShots(); renderAllowances(); renderSummaryCounters();
+}
 function renderShots(){
-  shotsTable.innerHTML=''; [...session.shots].slice().reverse().forEach(s=>{
+  shotsTable.innerHTML='';
+  [...session.shots].slice().reverse().forEach(s=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${s.n}</td><td>${s.score}</td><td><button class="b-red btn-lg">Retirer</button></td>`;
-    tr.querySelector('button').onclick=()=>{ if(session.finished) return;
+    tr.querySelector('button').onclick=()=>{
+      if(timeOver || !raceRunning) return showToast('Action indisponible.');
       session.shots=session.shots.filter(x=>x.n!==s.n).map((x,i)=>({n:i+1,score:x.score}));
-      renderShots(); renderAllowances(); renderSummaryCounters(); };
+      renderShots(); renderAllowances(); renderSummaryCounters();
+    };
     shotsTable.append(tr);
   });
 }
@@ -663,52 +647,13 @@ function maybeScheduleAssistForNextVolley(){
   const lastVolley = session.shots.slice(-fb);
   const zeros = lastVolley.filter(s=>s.score===0).length;
   const sum   = lastVolley.reduce((a,b)=>a+b.score,0);
-  const A=session.assist;
-
-  A.blocked = qs('#assist_blocked_live').checked || A.blocked;
-  if(A.enabled && !A.blocked && (zeros>=A.thrZeros || sum<=A.thrSum)){
-    if(A.manual){
-      A.pending = true; // demander confirmation
-      qs('#assistConfirm').classList.remove('hidden');
-      qs('#assistBannerNext').classList.add('hidden');
-    }else{
-      A.nextVolley = true; A.pending=false;
-      showToast('Aide activée : avance sur la prochaine volée.');
-      banners();
-    }
-  }else{
-    A.nextVolley = false; A.pending=false;
-    banners();
-  }
+  const needAssist = profConfig.enabled && (zeros>=profConfig.thrZeros || sum<=profConfig.thrSum);
+  zone2ShotsRemaining = needAssist ? fb : 0; // 3 flèches en Z2 si besoin
+  updateZoneVisuals();
 }
-
-/* Confirmation manuelle Zone 2 */
-qs('#assistYes').onclick = ()=>{
-  session.assist.nextVolley = true;
-  session.assist.pending = false;
-  banners();
-  showToast('Zone 2 appliquée à la prochaine volée.');
-};
-qs('#assistNo').onclick = ()=>{
-  session.assist.nextVolley = false;
-  session.assist.pending = false;
-  banners();
-  showToast('Zone 2 ignorée.');
-};
-
-function banners(){
-  const bNext=qs('#assistBannerNext'), bNow=qs('#assistBannerNow'), cBar=qs('#assistConfirm');
-  // Bandeau "prochaine volée"
-  bNext.classList.toggle('hidden', !(session.assist.nextVolley && !session.assist.manual));
-  // Bandeau "volée en cours" — toujours visible avec le bon libellé
-  const zoneNow = session.assist.currentVolley ? '2' : '1';
-  bNow.textContent = 'Volée en Zone ' + zoneNow;
-  bNow.classList.toggle('ok', session.assist.currentVolley); // style différent si zone 2
-  // Barre de confirmation si manuel
-  cBar.classList.toggle('hidden', !session.assist.pending);
-}
-function updateZoneBadge(){
-  zoneBadge.textContent = 'Zone actuelle : ' + (session.assist.currentVolley ? 'Zone 2' : 'Zone 1');
+function updateZoneVisuals(){
+  zoneBadge.textContent = 'Zone 1';
+  qs('#zone2Banner').classList.toggle('hidden', zone2ShotsRemaining<=0);
 }
 
 /* ================== Indice & compteurs ================== */
@@ -740,27 +685,47 @@ function buildAdviceTypes(context){
 function setAdvice(t){ adviceTxt.textContent = (t&&t.trim())? t : '—'; }
 function setAdviceSmart(context){ const types=buildAdviceTypes(context); types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift(); const max=(context==='end')?3:2; setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' ')); }
 
-/* ================== Fin de course ================== */
-const endCard=qs('#endCard'), distanceOut=qs('#distanceOut'), toSummaryWrap=qs('#toSummaryWrap');
-document.querySelectorAll('[data-frac]').forEach(b=> b.onclick=()=>{ if(session.finished) return; session.frac=+b.getAttribute('data-frac'); updateDistanceOut(); });
-qs('#finishRunner').onclick=()=> finalizeRunner();
-function showEnd(){ endCard.classList.remove('hidden'); updateDistanceOut(); if(navigator.vibrate) navigator.vibrate(120); }
-function hideEnd(){ endCard.classList.add('hidden'); }
+/* ================== Fin de temps : bandeau ================== */
+const endBar=qs('#endBar'), endActionBtn=qs('#endAction'), distanceOut=qs('#distanceOut');
+document.querySelectorAll('[data-frac]').forEach(b=> b.onclick=()=>{ if(!timeOver) return; session.frac=+b.getAttribute('data-frac'); updateDistanceOut(); });
+function showEndBar(){ endBar.classList.remove('hidden'); updateDistanceOut(); endActionBtn.textContent = (phase==='runner1') ? '➡️ Coureur suivant' : '📊 Voir le bilan'; if(navigator.vibrate) navigator.vibrate(120); }
+function hideEndBar(){ endBar.classList.add('hidden'); }
 function updateDistanceOut(){ const meters=Math.round((session.laps+(session.frac||0))*session.tourM); distanceOut.textContent=`Distance : ${meters} m`; }
-function finalizeRunner(){
+
+endActionBtn.onclick = ()=>{
+  if(phase === 'runner1'){
+    finalizeRunnerPartial();
+    phase = 'runner2';
+    prepareNextRunner('p2');
+  }else{
+    finalizeRunnerPartial();
+    phase = 'done';
+    buildSummaryFromResults(); show('summary'); profMode=false; renderSummary();
+  }
+};
+
+function finalizeRunnerPartial(){
   const R=session[session.active]; const meters=Math.round((session.laps+(session.frac||0))*session.tourM);
   const c=scoreCounts(); const indice=computeIndiceArc();
   session.results[session.active]={ prenom:R.prenom, nom:R.nom, classe:R.classe, sexe:R.sexe, distance:meters,
     nb0:c[0], nb6:c[6], nb7:c[7], nb8:c[8], nb9:c[9], nb10:c[10], indice_arc:indice };
-  hideEnd();
-  const other=session.active==='p1'?'p2':'p1';
-  if(!session.results[other]){ setAdviceSmart('end'); showToast('Coureur terminé. Passez au second.'); switchRunner(other); return; }
-  session.finished=true; document.getElementById('pickP1').disabled=true; document.getElementById('pickP2').disabled=true;
-  toSummaryWrap.classList.remove('hidden'); setAdviceSmart('end');
+}
+
+function prepareNextRunner(which){
+  // reset strict pour 2e coureur
+  session.active=which;
+  raceRunning=false; timeOver=false; running=false; clearInterval(timer); elapsed=0; clockEl.textContent='00:00.0';
+  session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
+  disableRaceInputs(false);
+  hideEndBar();
+  qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
+  qs('#backSetup').disabled=true; // pas de retour saisie pendant le déroulé
+  paintHeader(); paintRunnerBadge(); renderAll(); updateZoneVisuals();
 }
 
 /* ================== Résumé / QR / CSV ================== */
 let summaryData=[]; let profMode=false;
+function buildSummaryFromResults(){ const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2}); summaryData=out; }
 function buildQrData(rows){ return rows.map(d=>({nom:d.nom, prenom:d.prenom, classe:d.classe, sexe:d.sexe,
   distance:d.distance, nb0:d.nb0, nb6:d.nb6, nb7:d.nb7, nb8:d.nb8, nb9:d.nb9, nb10:d.nb10, indice_arc:d.indice_arc })); }
 function buildQR(payload){ const box=qs('#qr'); box.innerHTML=''; try{ if(window.QRCode){ new QRCode(box,{ text:payload, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }catch(e){ console.warn('QR non généré',e); } }
@@ -784,7 +749,7 @@ function renderSummary(){
       <td>${d.indice_arc}</td>
     </tr>`).join('');
   qs('#resume').innerHTML = `
-    <details>
+    <details open>
       <summary>Tableau récapitulatif</summary>
       <div style="overflow:auto; margin-top:8px">
         <table>
@@ -823,16 +788,18 @@ function parseEditsFromTable(){
 qs('#activateProf').onclick=()=>{ const code=(qs('#profCode').value||'').trim(); if(code===PROF_CODE){ profMode=true; renderSummary(); } else { showToast('Code incorrect.'); } };
 qs('#deactivateProf').onclick=()=>{ profMode=false; renderSummary(); };
 qs('#applyEdits').onclick=()=>{ summaryData=parseEditsFromTable(); renderSummary(); showToast('Bilan mis à jour.'); };
-qs('#goSummary').onclick=()=>{ const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2});
-  summaryData=out; show('summary'); profMode=false; renderSummary(); };
 qs('#backToCourse').onclick=()=> show('course');
 
-/* ================== Rendu global & init ================== */
-function renderAll(){ renderLaps(); renderAllowances(); renderShots(); renderSummaryCounters(); }
-function hideEnd(){ qs('#endCard').classList.add('hidden'); }
-function setAdvice(t){ qs('#adviceTxt').textContent = (t&&t.trim())? t : '—'; }
-function resetRunnerState(){ session.laps=0; session.shots=[]; session.frac=0; Object.assign(session.assist,{nextVolley:false,currentVolley:false,pending:false}); renderAll(); hideEnd(); setAdvice(''); banners(); updateZoneBadge(); }
-
+/* ================== Finaux & init ================== */
+function resetRunnerState(hard=false){
+  if(hard){
+    running=false; clearInterval(timer); elapsed=0; clockEl.textContent='00:00.0';
+    qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; qs('#btnReset').disabled=true;
+  }
+  session.laps=0; session.shots=[]; session.frac=0; zone2ShotsRemaining=0;
+  disableRaceInputs(false); hideEndBar(); setAdvice('');
+  updateZoneVisuals(); renderAll();
+}
 validate(); setAdvice('');
 try{ console.assert(!!V.cover && !!V.setup && !!V.course && !!V.summary, 'vues ok'); }catch(_){}
 </script>
