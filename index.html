@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Arcathlon — Compact V2</title>
+<title>ArcAthlon-V2 — Compact Gym V2.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -16,11 +16,7 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:17px/1.35 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    display:flex; flex-direction:column;
-  }
+  body{margin:0; background:var(--bg); color:var(--ink); font:17px/1.35 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; display:flex; flex-direction:column;}
   .wrap{max-width:980px; margin:0 auto; padding:16px; width:100%}
   h1,h2,h3{margin:0 0 10px; text-align:center}
   h1{font-size:clamp(24px,4vw,36px); font-weight:800}
@@ -30,62 +26,75 @@
   .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--ring); padding:14px}
   .hidden{display:none!important}
 
-  /* Boutons XL */
-  .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center}
+  .btns{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; align-items:center}
   button{border:0; border-radius:16px; font-weight:800; cursor:pointer}
   .btn-xl{padding:18px 20px; font-size:20px}
   .btn-lg{padding:16px 18px; font-size:18px}
+  .btn-xxl{padding:22px 26px; font-size:28px}
   .b-primary{background:var(--primary); color:#fff}
   .b-green{background:var(--green); color:#fff}
   .b-amber{background:var(--amber); color:#111}
   .b-red{background:var(--red); color:#fff}
   .b-slate{background:var(--slate); color:#fff}
+  .b-ghost{background:#eef2f7; color:#0b1220}
 
-  /* Inputs */
   label{display:block; font-weight:800; margin:8px 0 6px}
   input,select{width:100%; padding:14px 16px; border:2px solid #e5e7eb; border-radius:14px; background:#fff; font:inherit}
   input[type=number]{appearance:textfield}
 
-  /* Grilles */
   .grid{display:grid; gap:12px}
   .g2{grid-template-columns:1fr 1fr}
   @media (max-width:720px){ .g2{grid-template-columns:1fr} }
 
-  /* Accueil compact */
   .hero{display:flex; align-items:center; justify-content:center; min-height:50vh}
-
-  /* Chrono compact */
-  .chrono{display:flex; align-items:center; justify-content:center; gap:10px}
-  .time{font-size:clamp(40px,8vw,72px); font-weight:900; letter-spacing:1px}
+  .chrono{display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap}
+  .time{font-size:clamp(44px,9vw,78px); font-weight:900; letter-spacing:1px}
   .pill{display:inline-block; padding:6px 12px; border-radius:999px; background:#eef2f7; font-weight:800}
 
-  /* Zone centrale (Tours / Tir) */
   .bigNum{font-size:48px; font-weight:900}
   .kpi{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
   .kchip{background:#f1f5f9; padding:8px 12px; border-radius:12px; font-weight:800}
+  .kchip.allowed{border:2px solid rgba(10,88,255,.3)}
+  .kchip.shot{border:2px solid rgba(124,58,237,.3)}
+  .kchip.remain{border:2px solid rgba(34,197,94,.4)}
+  .glow{animation:pulse 1s infinite alternate}
+  @keyframes pulse{from{box-shadow:0 0 0 rgba(34,197,94,0)} to{box-shadow:0 0 18px rgba(34,197,94,.55)}}
 
-  /* Grille des scores (touch friendly) */
   .shot-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px}
   .shot-grid button{padding:16px 0; font-size:22px; border-radius:14px; font-weight:900}
 
-  /* Conseil central */
-  .advice{margin-top:10px; border:2px solid var(--adviceRing); background:var(--adviceBg);
-    border-radius:16px; padding:12px 14px; text-align:center}
+  .advice{margin-top:10px; border:2px solid var(--adviceRing); background:var(--adviceBg); border-radius:16px; padding:12px 14px; text-align:center}
   .ad-badge{display:inline-block; padding:4px 10px; border-radius:999px; font-weight:800; color:#fff; background:var(--adviceBadge); font-size:14px}
   .ad-text{margin-top:6px; font-size:18px; color:#0b1220; font-weight:800}
 
-  /* Table tir + résumé repliables */
   details{background:#f8fafc; border:1px dashed #dbe1ea; border-radius:12px; padding:8px 10px}
   details > summary{cursor:pointer; font-weight:800; margin:6px 0}
   table{width:100%; border-collapse:collapse}
   th,td{padding:10px; border-bottom:1px solid #e5e7eb; text-align:center}
 
-  /* Toast non bloquant */
-  .toast{ position:fixed; left:50%; bottom:84px; transform:translateX(-50%);
-    background:#111827; color:#fff; padding:10px 14px; border-radius:10px;
-    box-shadow:0 10px 30px rgba(2,6,23,.35); font-weight:800; z-index:70;
-    opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; max-width:92vw; text-align:center}
+  .toast{ position:fixed; left:50%; bottom:84px; transform:translateX(-50%); background:#111827; color:#fff; padding:10px 14px; border-radius:10px;
+    box-shadow:0 10px 30px rgba(2,6,23,.35); font-weight:800; z-index:70; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; max-width:92vw; text-align:center}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px)}
+
+  .banner{background:#fff7ed; border:2px dashed #f59e0b; color:#7c2d12; border-radius:12px; padding:8px 10px; text-align:center; font-weight:800}
+  .banner.ok{background:#ecfeff; border-color:#06b6d4; color:#155e75}
+
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:80;
+    background:linear-gradient(180deg,rgba(2,6,23,.55),rgba(2,6,23,.35));}
+  .modal.show{display:flex;}
+  .modal-card{background:#fff; border-radius:20px; max-width:900px; width:92%; overflow:hidden; box-shadow:0 12px 48px rgba(2,6,23,.25)}
+  .modal-head{display:flex; align-items:center; gap:12px; padding:16px 18px; color:#fff; font-weight:800}
+  .modal-head.help{background:linear-gradient(90deg,#0a58ff,#7c3aed)}
+  .modal-head.safe{background:linear-gradient(90deg,#22c55e,#0ea5e9)}
+  .modal-head.indice{background:linear-gradient(90deg,#111827,#0a58ff)}
+  .modal-head.prof{background:linear-gradient(90deg,#0a58ff,#22c55e)}
+  .modal-body{padding:18px}
+  .modal-body h4{margin:12px 0 6px}
+  .help-list{margin:8px 0 12px; line-height:1.55}
+  .help-list li{margin:6px 0}
+
+  .confirmbar{display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:8px}
+  .confirmbar .mini{padding:8px 10px; font-size:16px; border-radius:10px}
 
   footer{margin-top:auto; padding:10px; text-align:center; color:var(--muted)}
 </style>
@@ -95,11 +104,14 @@
     <!-- ACCUEIL -->
     <section id="view-cover" class="card hero">
       <div style="text-align:center">
-        <h1>Arcathlon — Compact Gym</h1>
+        <h1>ArcAthlon-V2</h1>
         <p class="muted">EPS • ScanProf ready</p>
         <div class="btns" style="margin-top:10px">
           <button id="btnStartApp" class="b-primary btn-xl">▶️ Démarrer</button>
           <button id="btnHelp" class="b-slate btn-lg">ℹ️ Aide</button>
+          <button id="btnSafety" class="b-ghost btn-lg">🛟 Fiche sécurité</button>
+          <button id="btnIndice" class="b-ghost btn-lg">🎯 Indice arc</button>
+          <button id="btnProf" class="b-ghost btn-lg">⚙️ Paramètres Prof</button>
         </div>
       </div>
     </section>
@@ -114,9 +126,7 @@
           <label>Nom</label><input id="p1_nom" autocomplete="off">
           <label>Classe</label><input id="p1_classe" autocomplete="off">
           <label>Sexe</label>
-          <select id="p1_sexe">
-            <option value="">—</option><option>F</option><option>M</option>
-          </select>
+          <select id="p1_sexe"><option value="">—</option><option>F</option><option>M</option></select>
         </div>
         <div>
           <h3>Coureur 2</h3>
@@ -124,9 +134,7 @@
           <label>Nom</label><input id="p2_nom" autocomplete="off">
           <label>Classe</label><input id="p2_classe" autocomplete="off">
           <label>Sexe</label>
-          <select id="p2_sexe">
-            <option value="">—</option><option>F</option><option>M</option>
-          </select>
+          <select id="p2_sexe"><option value="">—</option><option>F</option><option>M</option></select>
         </div>
       </div>
 
@@ -156,6 +164,7 @@
         <button class="b-slate btn-lg" id="preset33">3 tours → 3 flèches</button>
         <button class="b-slate btn-lg" id="preset11">1 tour → 1 flèche</button>
         <button class="b-slate btn-lg" id="preset13">1 tour → 3 flèches</button>
+        <button id="openProfFromSetup" class="b-ghost btn-lg">⚙️ Paramètres Prof</button>
       </div>
 
       <div class="btns" style="margin-top:10px">
@@ -164,7 +173,7 @@
       </div>
     </section>
 
-    <!-- COURSE COMPACTE -->
+    <!-- COURSE -->
     <section id="view-course" class="hidden">
       <div class="card">
         <div class="btns" style="justify-content:space-between; gap:8px">
@@ -173,21 +182,35 @@
         </div>
         <h2 id="runnerTitle">Coureur — </h2>
 
+        <div class="btns" style="margin:6px 0">
+          <span class="pill" id="zoneBadge">Zone actuelle : Zone 1</span>
+        </div>
+
         <!-- Chrono -->
         <div class="chrono card" style="margin-top:6px">
           <div class="time" id="clock">00:00.0</div>
           <div class="btns">
-            <button id="btnStartChrono" class="b-primary btn-lg">▶️</button>
+            <button id="btnStartChrono" class="b-primary btn-xxl">▶️ Démarrer</button>
             <button id="btnPause" class="b-amber btn-lg" disabled>⏸️</button>
             <button id="btnReset" class="b-red btn-lg" disabled>↺</button>
           </div>
         </div>
         <p class="muted" style="text-align:center">Durée cible : <b id="target"></b> min</p>
 
-        <!-- Switch coureurs -->
+        <!-- Switch coureurs (prénoms) -->
         <div class="btns" style="margin:8px 0">
           <button id="pickP1" class="b-green btn-lg">👟 Coureur 1</button>
           <button id="pickP2" class="b-green btn-lg">👟 Coureur 2</button>
+          <label style="margin-left:auto"><input type="checkbox" id="assist_blocked_live"> Bloquer auto-aide</label>
+        </div>
+
+        <!-- Bannières auto-aide -->
+        <div id="assistBannerNext" class="banner hidden">Prochaine volée : Zone 2 (aide)</div>
+        <div id="assistBannerNow" class="banner ok hidden">Volée en Zone 2</div>
+        <div id="assistConfirm" class="confirmbar hidden">
+          <span class="pill">Confirmer Zone 2 ?</span>
+          <button id="assistYes" class="b-green mini">✔️ Appliquer</button>
+          <button id="assistNo" class="b-slate mini">✖️ Ignorer</button>
         </div>
       </div>
 
@@ -210,9 +233,9 @@
         <div class="card">
           <h3>Tir (0,6,7,8,9,10)</h3>
           <div class="kpi" style="margin-bottom:6px">
-            <span class="kchip">Autorisées : <b id="allowed">0</b></span>
-            <span class="kchip">Tirées : <b id="shotCount">0</b></span>
-            <span class="kchip">Restantes : <b id="remain">0</b></span>
+            <span class="kchip allowed">Autorisées : <b id="allowed">0</b></span>
+            <span class="kchip shot">Tirées : <b id="shotCount">0</b></span>
+            <span class="kchip remain" id="remainChip">Restantes : <b id="remain">0</b></span>
             <span class="kchip">Indice : <b id="indiceArc">0</b>%</span>
           </div>
 
@@ -251,7 +274,6 @@
         </div>
       </div>
 
-      <!-- Fin -->
       <div class="card hidden" id="endCard" style="margin-top:10px; text-align:center">
         <h3>⏱️ Temps écoulé — fraction de tour</h3>
         <div class="btns" style="margin-top:6px">
@@ -296,7 +318,109 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <footer>ArcAthlonV2 - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+  <footer>ArcAthlon - Équipe EPS Lycée Vauban - LUXEMBOURG - JB</footer>
+
+  <!-- Modales info -->
+  <div class="modal" id="modalHelp">
+    <div class="modal-card">
+      <div class="modal-head help"><span>ℹ️</span><span>Mode d’emploi — ArcAthlon-V2</span></div>
+      <div class="modal-body">
+        <ol class="help-list">
+          <li>Saisir pour chaque élève : <strong>Prénom</strong>, <strong>Nom</strong>, <strong>Classe</strong>, <strong>Sexe</strong>.</li>
+          <li>Régler <strong>Durée</strong>, <strong>Longueur tour</strong>, et la règle <strong>Tours → Flèches</strong>.</li>
+          <li>En course : <strong>Start/Pause</strong> le chrono ; <strong>+1 / −1</strong> pour les tours.</li>
+          <li>Le tir est débloqué par <strong>blocs</strong> (selon la règle). Scores : <b>0,6,7,8,9,10</b>.</li>
+          <li>Fin du temps : compléter la <strong>fraction de tour</strong>, valider, puis générer <strong>QR</strong> et <strong>CSV</strong>.</li>
+        </ol>
+        <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalSafety">
+    <div class="modal-card">
+      <div class="modal-head safe"><span>🛟</span><span>Fiche sécurité</span></div>
+      <div class="modal-body">
+        <h4>Avant l’activité</h4>
+        <ul class="help-list">
+          <li>Zone de course dégagée ; surface adhérente ; pas d’obstacles.</li>
+          <li>Pas de tir matérialisé + zone d’attente.</li>
+          <li>Contrôler arcs/flèches (branches, corde, empennage, pointes).</li>
+        </ul>
+        <h4>Au pas de tir</h4>
+        <ul class="help-list">
+          <li>Arc vers les cibles ; on tire <strong>uniquement</strong> sur signal.</li>
+          <li>Personne devant la ligne ; on pose l’arc à l’arrêt.</li>
+        </ul>
+        <h4>Récupération</h4>
+        <ul class="help-list">
+          <li>Sur signal ; on marche, pas de course devant la cible.</li>
+          <li>Retirer la flèche dans l’axe, main sur la cible.</li>
+        </ul>
+        <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalIndice">
+    <div class="modal-card">
+      <div class="modal-head indice"><span>🎯</span><span>Indice arc — explication</span></div>
+      <div class="modal-body">
+        <p><strong>But :</strong> mesurer la précision de 0 à 100%.</p>
+        <p><strong>Scores par flèche :</strong> 0, 6, 7, 8, 9, 10.</p>
+        <p><strong>Calcul :</strong> moyenne des points sur 10, puis sur 100.</p>
+        <ul class="help-list">
+          <li>Total flèches T = nb0 + nb6 + nb7 + nb8 + nb9 + nb10</li>
+          <li>Total points P = 6×nb6 + 7×nb7 + 8×nb8 + 9×nb9 + 10×nb10</li>
+          <li><b>Indice (%) = (P / T) ÷ 10 × 100</b></li>
+        </ul>
+        <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Paramètres Prof -->
+  <div class="modal" id="modalProf">
+    <div class="modal-card">
+      <div class="modal-head prof"><span>⚙️</span><span>Paramètres Prof — ArcAthlon-V2</span></div>
+      <div class="modal-body">
+        <div id="profGate">
+          <p><b>Code Prof</b> requis :</p>
+          <div class="btns">
+            <input id="profCodeGate" type="password" inputmode="numeric" placeholder="Code Prof" style="min-width:220px">
+            <button id="profUnlock" class="b-slate btn-lg">🔓 Déverrouiller</button>
+          </div>
+          <p class="muted">Astuce : ce paramétrage s’applique à la prochaine session (jusqu’au rechargement).</p>
+        </div>
+        <div id="profPanel" class="hidden">
+          <h4>Auto-aide “Zone 2”</h4>
+          <div class="grid g2">
+            <div>
+              <label><input type="checkbox" id="cfg_enabled" checked> Activer l’auto-aide</label>
+            </div>
+            <div>
+              <label>Seuil de zéros / volée (≥)</label>
+              <input id="cfg_thrZeros" type="number" min="1" step="1" value="3">
+            </div>
+          </div>
+          <div class="grid g2" style="margin-top:6px">
+            <div>
+              <label>Seuil points / volée (≤)</label>
+              <input id="cfg_thrSum" type="number" min="0" step="1" value="20">
+            </div>
+            <div>
+              <label><input type="checkbox" id="cfg_manual"> Confirmation manuelle (Appliquer/Ignorer)</label>
+            </div>
+          </div>
+          <div class="btns" style="margin-top:10px">
+            <button id="profSave" class="b-green btn-lg">💾 Enregistrer</button>
+            <button class="b-slate btn-lg" data-close>Fermer</button>
+          </div>
+          <p class="muted">La Zone 2 s’applique pour <b>une seule volée</b> (3 flèches), puis retour en Zone 1.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
           onerror="window.QRCode=undefined"></script>
@@ -305,13 +429,26 @@
 'use strict';
 
 /* ================== Réglages ================== */
-const PROF_CODE = '57';
+const PROF_CODE = '57'; // code prof
 
 /* ================== Helpers ================== */
 const qs = sel => document.querySelector(sel);
 const V = { cover: qs('#view-cover'), setup: qs('#view-setup'), course: qs('#view-course'), summary: qs('#view-summary') };
 function show(name){ Object.values(V).forEach(v=>v.classList.add('hidden')); V[name].classList.remove('hidden'); window.scrollTo(0,0); }
 function showToast(msg, ms=1600){ const t=qs('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast.t); showToast.t=setTimeout(()=>t.classList.remove('show'),ms); }
+
+/* ================== Modales ================== */
+function openModal(id){ qs('#'+id).classList.add('show'); }
+function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
+document.addEventListener('click', (e)=>{ if(e.target.matches('[data-close]')) closeModals(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModals(); });
+
+/* Boutons modales/info */
+qs('#btnHelp').onclick   = ()=> openModal('modalHelp');
+qs('#btnSafety').onclick = ()=> openModal('modalSafety');
+qs('#btnIndice').onclick = ()=> openModal('modalIndice');
+qs('#btnProf').onclick   = ()=> openModal('modalProf');
+qs('#openProfFromSetup').onclick = ()=> openModal('modalProf');
 
 /* ================== Navigation ================== */
 qs('#btnStartApp').onclick = ()=> show('setup');
@@ -324,50 +461,90 @@ function clean(s){ return (s||'').replace(/\s+/g,' ').trim(); }
 function val(id){ return clean(document.getElementById(id).value); }
 function okNum(v,min){ const n=+v; return Number.isFinite(n) && n>=min; }
 function mark(el, good){ el.style.borderColor = good ? '#e5e7eb' : '#ef4444'; }
-
 function validate(){
-  // Requis : Prénom, Nom, Classe, Sexe (pour chaque coureur)
   const req = ['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe'];
   let ok = true;
   req.forEach(id=>{ const el=document.getElementById(id); const good=val(id).length>0; mark(el,good); ok=ok&&good; });
-
-  // Nombres requis
-  const nIds = ['duree_min','tour_m','tours_bloc','fleches_bloc'];
-  nIds.forEach(id=>{
+  ['duree_min','tour_m','tours_bloc','fleches_bloc'].forEach(id=>{
     const good = okNum(val(id), id==='tour_m'?10:1);
     mark(document.getElementById(id), good); ok = ok && good;
   });
-
-  qs('#goCourse').disabled = !ok;
-  return ok;
+  qs('#goCourse').disabled = !ok; return ok;
 }
-
-// Écouteurs validation live
 ['p1_prenom','p1_nom','p1_classe','p1_sexe','p2_prenom','p2_nom','p2_classe','p2_sexe','duree_min','tour_m','tours_bloc','fleches_bloc']
 .forEach(id=>{ const el=document.getElementById(id); el.addEventListener('input',validate); el.addEventListener('change',validate); });
 
-// Presets
+/* Presets tours→flèches */
 qs('#preset33').onclick = ()=>{ document.getElementById('tours_bloc').value=3; document.getElementById('fleches_bloc').value=3; validate(); };
 qs('#preset11').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=1; validate(); };
 qs('#preset13').onclick = ()=>{ document.getElementById('tours_bloc').value=1; document.getElementById('fleches_bloc').value=3; validate(); };
 
+/* ================== Stockage config prof (mémoire simple) ================== */
+const profConfig = {
+  enabled: true,
+  thrZeros: 3,
+  thrSum: 20,
+  manual: false
+};
+function applyProfPanelToConfig(){
+  profConfig.enabled = qs('#cfg_enabled').checked;
+  profConfig.thrZeros = Math.max(1, +qs('#cfg_thrZeros').value || 3);
+  profConfig.thrSum   = Math.max(0, +qs('#cfg_thrSum').value || 20);
+  profConfig.manual   = qs('#cfg_manual').checked;
+}
+function fillProfPanelFromConfig(){
+  qs('#cfg_enabled').checked = profConfig.enabled;
+  qs('#cfg_thrZeros').value  = profConfig.thrZeros;
+  qs('#cfg_thrSum').value    = profConfig.thrSum;
+  qs('#cfg_manual').checked  = profConfig.manual;
+}
+
+/* Déverrouillage panel prof */
+qs('#profUnlock').onclick = ()=>{
+  const code = (qs('#profCodeGate').value||'').trim();
+  if(code === String(PROF_CODE)){
+    qs('#profGate').classList.add('hidden');
+    qs('#profPanel').classList.remove('hidden');
+    fillProfPanelFromConfig();
+  }else{
+    showToast('Code incorrect.');
+  }
+};
+qs('#profSave').onclick = ()=>{
+  applyProfPanelToConfig();
+  showToast('Paramètres Prof enregistrés.');
+};
+
 /* ================== Session ================== */
-const session={ p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3}, active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false };
+const session={
+  p1:null, p2:null, tourM:0, dureeMin:0, rules:{tb:3,fb:3},
+  active:'p1', laps:0, frac:0, shots:[], results:{p1:null,p2:null}, finished:false,
+  assist:{enabled:true, thrZeros:3, thrSum:20, manual:false, blocked:false, nextVolley:false, currentVolley:false, pending:false}
+};
 
 qs('#goCourse').onclick=()=>{
-  if(!validate()){
-    showToast('Complétez les champs requis (dont Sexe).');
-    return;
-  }
-  // Normalisation sexe F/M
+  if(!validate()){ showToast('Complétez tous les champs (dont Sexe).'); return; }
   function sex(id){ const s=(val(id)||'').toUpperCase(); return s==='M'?'M':'F'; }
-
   session.p1={ prenom:val('p1_prenom'), nom:val('p1_nom'), classe:val('p1_classe'), sexe:sex('p1_sexe') };
   session.p2={ prenom:val('p2_prenom'), nom:val('p2_nom'), classe:val('p2_classe'), sexe:sex('p2_sexe') };
 
   session.dureeMin=+val('duree_min'); session.tourM=+val('tour_m');
   session.rules.tb=+document.getElementById('tours_bloc').value;
   session.rules.fb=+document.getElementById('fleches_bloc').value;
+
+  // Appliquer la config prof à la session
+  Object.assign(session.assist, {
+    enabled: profConfig.enabled,
+    thrZeros: profConfig.thrZeros,
+    thrSum: profConfig.thrSum,
+    manual: profConfig.manual,
+    blocked: false, nextVolley:false, currentVolley:false, pending:false
+  });
+  qs('#assist_blocked_live').checked = false;
+
+  // Prénoms sur boutons
+  qs('#pickP1').textContent = '👟 ' + session.p1.prenom;
+  qs('#pickP2').textContent = '👟 ' + session.p2.prenom;
 
   session.active='p1'; resetRunnerState(); paintHeader(); show('course');
 };
@@ -380,17 +557,19 @@ function start(){ if(session.finished||running) return; running=true; t0=Date.no
 function pause(){ if(!running) return; running=false; clearInterval(timer);
   qs('#btnStartChrono').disabled=false; qs('#btnPause').disabled=true; }
 function reset(){ pause(); elapsed=0; clockEl.textContent='00:00.0'; qs('#btnReset').disabled=true;
-  session.laps=0; session.shots=[]; session.frac=0; renderAll(); hideEnd(); adviceHistory.length=0; setAdvice(''); }
+  session.laps=0; session.shots=[]; session.frac=0;
+  Object.assign(session.assist, {nextVolley:false, currentVolley:false, pending:false, blocked:false});
+  renderAll(); hideEnd(); adviceHistory.length=0; setAdvice(''); banners(); updateZoneBadge(); }
 function tick(){ elapsed=Date.now()-t0; const cs=Math.floor(elapsed/100); const m=Math.floor(cs/600), s=Math.floor((cs%600)/10), d=cs%10;
   clockEl.textContent=`${m<10?'0':''}${m}:${s<10?'0':''}${s}.${d}`; if(m>=session.dureeMin){ pause(); showEnd(); setAdviceSmart('end'); } }
 qs('#btnStartChrono').onclick=start; qs('#btnPause').onclick=pause; qs('#btnReset').onclick=reset;
 
 /* ================== UI header ================== */
 const runnerTitle=qs('#runnerTitle'), metaRunner=qs('#metaRunner'), lapMetersEl=qs('#lapMeters'),
-      lapsEl=qs('#laps'), liveDistanceEl=qs('#liveDistance');
+      lapsEl=qs('#laps'), liveDistanceEl=qs('#liveDistance'), zoneBadge=qs('#zoneBadge');
 function paintHeader(){
   const R=session[session.active];
-  runnerTitle.textContent=`Coureur — ${R.prenom} ${R.nom}`;
+  runnerTitle.textContent=`${R.prenom} ${R.nom}`;
   metaRunner.textContent=`${R.classe} • ${R.sexe}`;
   lapMetersEl.textContent=session.tourM;
   targetEl.textContent=session.dureeMin;
@@ -399,16 +578,20 @@ function paintHeader(){
 /* ================== Runners switch ================== */
 qs('#pickP1').onclick=()=> switchRunner('p1');
 qs('#pickP2').onclick=()=> switchRunner('p2');
-const temp={ p1:{laps:0,frac:0,shots:[]}, p2:{laps:0,frac:0,shots:[]} };
-function saveTemp(){ temp[session.active]={ laps:session.laps, frac:session.frac, shots:JSON.parse(JSON.stringify(session.shots)) }; }
-function loadTemp(){ const t=temp[session.active]; session.laps=t.laps; session.frac=t.frac; session.shots=JSON.parse(JSON.stringify(t.shots)); renderAll(); hideEnd(); }
+const temp={ p1:{laps:0,frac:0,shots:[], assist:{next:false,now:false,pending:false}}, p2:{laps:0,frac:0,shots:[], assist:{next:false,now:false,pending:false}} };
+function saveTemp(){ temp[session.active]={ laps:session.laps, frac:session.frac, shots:JSON.parse(JSON.stringify(session.shots)), assist:{next:session.assist.nextVolley, now:session.assist.currentVolley, pending:session.assist.pending} }; }
+function loadTemp(){ const t=temp[session.active]; session.laps=t.laps; session.frac=t.frac; session.shots=JSON.parse(JSON.stringify(t.shots)); session.assist.nextVolley=t.assist.next; session.assist.currentVolley=t.assist.now; session.assist.pending=t.assist.pending; renderAll(); hideEnd(); banners(); updateZoneBadge(); }
 function switchRunner(which){ if(session.finished) return; saveTemp(); session.active=which; reset(); paintHeader(); loadTemp(); }
 
 /* ================== Règles Tours → Flèches ================== */
 function calcAllowedShots(){ const {tb,fb}=session.rules; const blocs=Math.floor(session.laps/tb); return blocs*fb; }
-const allowedEl=qs('#allowed'), shotCountEl=qs('#shotCount'), remainEl=qs('#remain');
-function renderAllowances(){ const allowed=calcAllowedShots(); const remain=Math.max(0,allowed-session.shots.length);
-  allowedEl.textContent=allowed; shotCountEl.textContent=session.shots.length; remainEl.textContent=remain; qs('#lapPlus').disabled = (remain>0); }
+const allowedEl=qs('#allowed'), shotCountEl=qs('#shotCount'), remainEl=qs('#remain'), remainChip=qs('#remainChip');
+function renderAllowances(){
+  const allowed=calcAllowedShots(); const remain=Math.max(0,allowed-session.shots.length);
+  allowedEl.textContent=allowed; shotCountEl.textContent=session.shots.length; remainEl.textContent=remain;
+  if(remain>0) remainChip.classList.add('glow'); else remainChip.classList.remove('glow');
+  qs('#lapPlus').disabled = (remain>0);
+}
 
 /* ================== Tours ================== */
 qs('#lapPlus').onclick=()=>{ if(session.finished) return; const allowed=calcAllowedShots(); const pending=allowed-session.shots.length;
@@ -416,7 +599,7 @@ qs('#lapPlus').onclick=()=>{ if(session.finished) return; const allowed=calcAllo
 qs('#lapMinus').onclick=()=>{ if(session.finished) return; session.laps=Math.max(0,session.laps-1); renderAll(); };
 function renderLaps(){ lapsEl.textContent=session.laps; liveDistanceEl.textContent=Math.round((session.laps+(session.frac||0))*session.tourM); }
 
-/* ================== Tir ================== */
+/* ================== Tir + Auto-aide Zone 2 ================== */
 const shotsTable=qs('#shotsTable');
 document.querySelectorAll('#scoreButtons [data-score]').forEach(btn=>{
   btn.onclick=()=>{
@@ -426,7 +609,27 @@ document.querySelectorAll('#scoreButtons [data-score]').forEach(btn=>{
       const need = session.rules.tb - (session.laps % session.rules.tb || session.rules.tb);
       showToast(`Pas assez de tours : +${need} tour${need>1?'s':''}`); return;
     }
-    addShot(+btn.getAttribute('data-score')); setAdviceSmart('shot');
+    const score=+btn.getAttribute('data-score');
+    const fb=session.rules.fb;
+    const isNewVolley = (session.shots.length % fb === 0); // 1ère flèche d'une volée
+    if(isNewVolley){
+      // appliquer zone 2 si programmée pour cette volée
+      if(session.assist.nextVolley){
+        if(session.assist.manual && !session.assist.pending){
+          session.assist.pending = true; // on affiche la barre de confirmation
+          banners(); // montrera confirmbar
+        }else if(!session.assist.manual){
+          session.assist.currentVolley = true; session.assist.nextVolley=false; banners(); updateZoneBadge();
+        }
+      }else{
+        session.assist.currentVolley = false; updateZoneBadge();
+      }
+    }
+    addShot(score); setAdviceSmart('shot');
+    // Si fin de volée, évaluer pour la prochaine
+    if(session.shots.length % fb === 0){
+      maybeScheduleAssistForNextVolley();
+    }
   };
 });
 function addShot(score){ session.shots.push({n:session.shots.length+1, score}); renderShots(); renderAllowances(); renderSummaryCounters(); }
@@ -435,9 +638,57 @@ function renderShots(){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${s.n}</td><td>${s.score}</td><td><button class="b-red btn-lg">Retirer</button></td>`;
     tr.querySelector('button').onclick=()=>{ if(session.finished) return;
-      session.shots=session.shots.filter(x=>x.n!==s.n).map((x,i)=>({n:i+1,score:x.score})); renderShots(); renderAllowances(); renderSummaryCounters(); };
+      session.shots=session.shots.filter(x=>x.n!==s.n).map((x,i)=>({n:i+1,score:x.score}));
+      renderShots(); renderAllowances(); renderSummaryCounters(); };
     shotsTable.append(tr);
   });
+}
+function maybeScheduleAssistForNextVolley(){
+  const fb=session.rules.fb; if(fb<=0) return;
+  const lastVolley = session.shots.slice(-fb);
+  const zeros = lastVolley.filter(s=>s.score===0).length;
+  const sum   = lastVolley.reduce((a,b)=>a+b.score,0);
+  const A=session.assist;
+
+  A.blocked = qs('#assist_blocked_live').checked || A.blocked;
+  if(A.enabled && !A.blocked && (zeros>=A.thrZeros || sum<=A.thrSum)){
+    if(A.manual){
+      A.pending = true; // demander confirmation
+      qs('#assistConfirm').classList.remove('hidden');
+      qs('#assistBannerNext').classList.add('hidden');
+    }else{
+      A.nextVolley = true; A.pending=false;
+      showToast('Aide activée : avance sur la prochaine volée.');
+      banners();
+    }
+  }else{
+    A.nextVolley = false; A.pending=false;
+    banners();
+  }
+}
+
+/* Confirmation manuelle Zone 2 */
+qs('#assistYes').onclick = ()=>{
+  session.assist.nextVolley = true;
+  session.assist.pending = false;
+  banners();
+  showToast('Zone 2 appliquée à la prochaine volée.');
+};
+qs('#assistNo').onclick = ()=>{
+  session.assist.nextVolley = false;
+  session.assist.pending = false;
+  banners();
+  showToast('Zone 2 ignorée.');
+};
+
+function banners(){
+  const bNext=qs('#assistBannerNext'), bNow=qs('#assistBannerNow'), cBar=qs('#assistConfirm');
+  bNext.classList.toggle('hidden', !(session.assist.nextVolley && !session.assist.manual));
+  bNow.classList.toggle('hidden', !session.assist.currentVolley);
+  cBar.classList.toggle('hidden', !session.assist.pending);
+}
+function updateZoneBadge(){
+  zoneBadge.textContent = 'Zone actuelle : ' + (session.assist.currentVolley ? 'Zone 2' : 'Zone 1');
 }
 
 /* ================== Indice & compteurs ================== */
@@ -449,7 +700,7 @@ function renderSummaryCounters(){ const c=scoreCounts();
   c0El.textContent=c[0]; c6El.textContent=c[6]; c7El.textContent=c[7]; c8El.textContent=c[8]; c9El.textContent=c[9]; c10El.textContent=c[10];
   indiceArcEl.textContent=computeIndiceArc(); }
 
-/* ================== Conseils anti-redondants ================== */
+/* ================== Conseils ================== */
 const adviceTxt=qs('#adviceTxt'); const ADVICE_COOLDOWN_EVENTS=3; const adviceHistory=[];
 const ADICT={ breath:"Respire calmement.", breath5:"Ferme les yeux, 5 respirations.", anchor:"Tiens mieux ton arc.", routine:"Refais pareil.", tempo:"Prends ton temps.", hydrate:"Bois un peu.", focus:"Reste concentré." };
 function pushAdviceTypeOnce(type, bag){ if(!type) return; if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return; bag.push(type); }
@@ -530,7 +781,7 @@ function renderSummary(){
   const exportBtn=qs('#exportCsv');
   exportBtn.onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob); const a=document.createElement('a');
-    a.href=url; a.download=`Arcathlon_${new Date().toISOString().slice(0,10)}.csv`;
+    a.href=url; a.download=`ArcAthlon_${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
   const profHint=qs('#profHint'), act=qs('#activateProf'), deact=qs('#deactivateProf'), apply=qs('#applyEdits');
   act.disabled=profMode; deact.disabled=!profMode; apply.disabled=!profMode;
@@ -544,7 +795,6 @@ function parseEditsFromTable(){
     const nb0=int('nb0'),nb6=int('nb6'),nb7=int('nb7'),nb8=int('nb8'),nb9=int('nb9'),nb10=int('nb10');
     const total=nb0+nb6+nb7+nb8+nb9+nb10; const pts=nb6*6+nb7*7+nb8*8+nb9*9+nb10*10;
     const indice= total>0 ? +(((pts/total)/10*100).toFixed(2)) : 0;
-    // sexe déjà normalisé à la saisie, mais on sécurise:
     const sx=(txt('sexe')||'').toUpperCase(); const sexe = (sx==='M'||sx==='F')?sx:'F';
     return { nom:txt('nom'), prenom:txt('prenom'), classe:txt('classe'),
       sexe, distance:int('distance'), nb0,nb6,nb7,nb8,nb9,nb10, indice_arc:indice };
@@ -557,14 +807,12 @@ qs('#goSummary').onclick=()=>{ const out=[]; if(session.results.p1) out.push({..
   summaryData=out; show('summary'); profMode=false; renderSummary(); };
 qs('#backToCourse').onclick=()=> show('course');
 
-/* ================== Rendu global ================== */
+/* ================== Rendu global & init ================== */
 function renderAll(){ renderLaps(); renderAllowances(); renderShots(); renderSummaryCounters(); }
-function resetRunnerState(){ session.laps=0; session.shots=[]; session.frac=0; renderAll(); hideEnd(); setAdvice(''); }
-
-/* ================== Conseils init ================== */
+function hideEnd(){ qs('#endCard').classList.add('hidden'); }
 function setAdvice(t){ qs('#adviceTxt').textContent = (t&&t.trim())? t : '—'; }
+function resetRunnerState(){ session.laps=0; session.shots=[]; session.frac=0; Object.assign(session.assist,{nextVolley:false,currentVolley:false,pending:false}); renderAll(); hideEnd(); setAdvice(''); banners(); updateZoneBadge(); }
 
-/* ================== Init ================== */
 validate(); setAdvice('');
 try{ console.assert(!!V.cover && !!V.setup && !!V.course && !!V.summary, 'vues ok'); }catch(_){}
 </script>
