@@ -105,6 +105,9 @@
   .end-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px}
 
   footer{margin-top:auto; padding:10px; text-align:center; color:var(--muted)}
+
+  /* petite aide visuelle pour inputs d'édition en mode prof */
+  .edit-input{width:100%; padding:8px 10px; border:2px solid #dbe1ea; border-radius:10px; font:inherit; text-align:center}
 </style>
 </head>
 <body>
@@ -283,8 +286,11 @@
       <div class="card" style="margin-top:8px">
         <div class="btns" style="flex-wrap:wrap">
           <button class="b-primary btn-lg" id="exportCsv">⬇️ Export CSV</button>
+          <button class="b-ghost btn-lg" id="btnProfMode">🔒 Mode prof</button>
+          <button class="b-green btn-lg hidden" id="btnSaveEdits">💾 Enregistrer</button>
+          <button class="b-red btn-lg hidden" id="btnCancelEdits">❌ Annuler</button>
         </div>
-        <p class="muted" style="margin-top:6px">Le tableau est non-modifiable (Paramètres simplifiés).</p>
+        <p class="muted" id="summaryNote" style="margin-top:6px">Le tableau est non-modifiable (Paramètres simplifiés).</p>
       </div>
 
       <div id="resume" style="margin-top:8px"></div>
@@ -321,6 +327,7 @@
           </li>
           <li>En course : <strong>Start/Pause</strong> le chrono ; <strong>+1 / −1</strong> pour les tours ; saisir les scores (0,6,7,8,9,10).</li>
           <li>Fin du temps : un bandeau <strong>central</strong> permet d’ajuster la <strong>fraction de tour</strong> et de passer à <b>Course 2</b>, puis au <b>Bilan</b>.</li>
+          <li><b>En Bilan</b> : bouton <b>🔒 Mode prof</b> (code <b>57</b>) pour corriger le tableau avant de générer / scanner le QR.</li>
         </ol>
         <div class="btns"><button class="b-slate btn-lg" data-close>Fermer</button></div>
       </div>
@@ -679,9 +686,11 @@ function renderSummaryCounters(){ const c=scoreCounts();
   c0El.textContent=c[0]; c6El.textContent=c[6]; c7El.textContent=c[7]; c8El.textContent=c[8]; c9El.textContent=c[9]; c10El.textContent=c[10];
   indiceArcEl.textContent=computeIndiceArc(); }
 
-/* ============ Conseils ============ */
+/* ============ Conseils + Encouragements ============ */
 const adviceBox=qs('#adviceBox'), adviceTxt=qs('#adviceTxt'); const ADVICE_COOLDOWN_EVENTS=3; const adviceHistory=[];
 const ADICT={ breath:"Respire calmement.", breath5:"Ferme les yeux, 5 respirations.", anchor:"Tiens mieux ton arc.", routine:"Refais pareil.", tempo:"Prends ton temps.", hydrate:"Bois un peu.", focus:"Reste concentré." };
+const ENCOURAGE = ["💪 On continue !","👌 Bien joué !","👏 Super, enchaîne !","🚀 Ça progresse !","🔥 Tu gères !"];
+function randEnc(){ return ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)]; }
 function showAdviceBox(){ adviceBox.style.display=''; }
 function hideAdviceBox(){ adviceBox.style.display='none'; }
 function pushAdviceTypeOnce(type, bag){ if(!type) return; if(adviceHistory.slice(-ADVICE_COOLDOWN_EVENTS).includes(type)) return; bag.push(type); }
@@ -695,18 +704,23 @@ function buildAdviceTypes(context){
   }
   if(indice<40) pushAdviceTypeOnce('breath',types); else if(indice<70) pushAdviceTypeOnce('focus',types); else pushAdviceTypeOnce('routine',types);
   if(context==='end'){ pushAdviceTypeOnce('hydrate',types); }
-  if(types.length===0) pushAdviceTypeOnce('focus',types);
+  // s'il n'y a rien de spécifique détecté, on mettra un encouragement au rendu
   return types;
 }
 function setAdvice(t){
   if(!session.adviceEnabled){ hideAdviceBox(); return; }
   showAdviceBox();
-  adviceTxt.textContent = (t&&t.trim())? t : '—';
+  adviceTxt.textContent = (t&&t.trim())? t : randEnc();
 }
 function setAdviceSmart(context){
   if(!session.adviceEnabled) return;
-  const types=buildAdviceTypes(context); types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift();
-  const max=(context==='end')?3:2; setAdvice(types.slice(0,max).map(t=>ADICT[t]).join(' '));
+  const types=buildAdviceTypes(context);
+  types.forEach(t=>adviceHistory.push(t)); while(adviceHistory.length>20) adviceHistory.shift();
+  let base = types.slice(0,(context==='end')?3:2).map(t=>ADICT[t]).join(' ');
+  // Si pas de conseil "spécifique" (seulement routine/focus) → ajouter un petit mot d’encouragement
+  const genericOnly = types.length>0 && types.every(t=> t==='routine' || t==='focus');
+  if(!base || genericOnly){ base = (base? base+' ' : '') + randEnc(); }
+  setAdvice(base);
 }
 function resetAdviceHistory(){ adviceHistory.length = 0; }
 
@@ -724,7 +738,7 @@ endActionBtn.onclick = ()=>{
   if(phase === 'runner1'){
     finalizeRunnerPartial(); phase = 'runner2'; closeModalEnd(); prepareNextRunner('p2');
   }else{
-    finalizeRunnerPartial(); phase = 'done'; closeModalEnd(); buildSummaryFromResults(); show('summary'); renderSummary();
+    finalizeRunnerPartial(); phase = 'done'; closeModalEnd(); buildSummaryFromResults(); show('summary'); renderSummary(false);
   }
 };
 
@@ -747,8 +761,10 @@ function prepareNextRunner(which){
   if(session.adviceEnabled) setAdvice("Respire calmement. Reste concentré."); else hideAdviceBox();
 }
 
-/* ============ Résumé / QR / CSV ============ */
+/* ============ Résumé / QR / CSV / Mode Prof ============ */
 let summaryData=[];
+let editMode=false;
+
 function buildSummaryFromResults(){ const out=[]; if(session.results.p1) out.push({...session.results.p1}); if(session.results.p2) out.push({...session.results.p2}); summaryData=out; }
 function buildQrData(rows){ return rows.map(d=>({nom:d.nom, prenom:d.prenom, classe:d.classe, sexe:d.sexe,
   distance:d.distance, nb0:d.nb0, nb6:d.nb6, nb7:d.nb7, nb8:d.nb8, nb9:d.nb9, nb10:d.nb10, indice_arc:d.indice_arc })); }
@@ -756,22 +772,61 @@ function buildQR(payload){ const box=qs('#qr'); box.innerHTML=''; try{ if(window
 function toCSV(data){ const H=['nom','prenom','classe','sexe','distance','nb0','nb6','nb7','nb8','nb9','nb10','indice_arc'];
   const esc=v=>{ const s=(v==null?'':String(v)); return /[;\"\n]/.test(s)? `"${s.replace(/\"/g,'""')}"` : s; };
   return [H.join(';'), ...data.map(d=>H.map(h=>esc(d[h])).join(';'))].join('\n'); }
-function renderSummary(){
-  const rows = summaryData.map((d,i)=>`
-    <tr data-index="${i}">
-      <td>${d.nom}</td>
-      <td>${d.prenom}</td>
-      <td>${d.classe}</td>
-      <td>${d.sexe}</td>
-      <td>${d.distance}</td>
-      <td>${d.nb0}</td>
-      <td>${d.nb6}</td>
-      <td>${d.nb7}</td>
-      <td>${d.nb8}</td>
-      <td>${d.nb9}</td>
-      <td>${d.nb10}</td>
-      <td>${d.indice_arc}</td>
-    </tr>`).join('');
+
+function renderSummary(asEdit=false){
+  editMode = !!asEdit;
+  const note = qs('#summaryNote');
+  const btnSave = qs('#btnSaveEdits');
+  const btnCancel = qs('#btnCancelEdits');
+  if(editMode){
+    note.textContent = 'Mode prof activé : le tableau est modifiable. Pensez à enregistrer vos corrections avant le QR.';
+    btnSave.classList.remove('hidden'); btnSave.removeAttribute('hidden');
+    btnCancel.classList.remove('hidden'); btnCancel.removeAttribute('hidden');
+  }else{
+    note.textContent = 'Le tableau est non-modifiable (Paramètres simplifiés).';
+    btnSave.classList.add('hidden'); btnSave.setAttribute('hidden','');
+    btnCancel.classList.add('hidden'); btnCancel.setAttribute('hidden','');
+  }
+
+  const rows = summaryData.map((d,i)=>{
+    if(!editMode){
+      return `<tr data-index="${i}">
+        <td>${d.nom}</td>
+        <td>${d.prenom}</td>
+        <td>${d.classe}</td>
+        <td>${d.sexe}</td>
+        <td>${d.distance}</td>
+        <td>${d.nb0}</td>
+        <td>${d.nb6}</td>
+        <td>${d.nb7}</td>
+        <td>${d.nb8}</td>
+        <td>${d.nb9}</td>
+        <td>${d.nb10}</td>
+        <td>${d.indice_arc}</td>
+      </tr>`;
+    }else{
+      return `<tr data-index="${i}">
+        <td><input class="edit-input" data-f="nom" value="${d.nom||''}"></td>
+        <td><input class="edit-input" data-f="prenom" value="${d.prenom||''}"></td>
+        <td><input class="edit-input" data-f="classe" value="${d.classe||''}"></td>
+        <td>
+          <select class="edit-input" data-f="sexe">
+            <option ${d.sexe==='F'?'selected':''}>F</option>
+            <option ${d.sexe==='M'?'selected':''}>M</option>
+          </select>
+        </td>
+        <td><input class="edit-input" data-f="distance" type="number" step="1" value="${d.distance||0}"></td>
+        <td><input class="edit-input" data-f="nb0" type="number" step="1" value="${d.nb0||0}"></td>
+        <td><input class="edit-input" data-f="nb6" type="number" step="1" value="${d.nb6||0}"></td>
+        <td><input class="edit-input" data-f="nb7" type="number" step="1" value="${d.nb7||0}"></td>
+        <td><input class="edit-input" data-f="nb8" type="number" step="1" value="${d.nb8||0}"></td>
+        <td><input class="edit-input" data-f="nb9" type="number" step="1" value="${d.nb9||0}"></td>
+        <td><input class="edit-input" data-f="nb10" type="number" step="1" value="${d.nb10||0}"></td>
+        <td><input class="edit-input" data-f="indice_arc" type="number" step="0.01" value="${d.indice_arc||0}"></td>
+      </tr>`;
+    }
+  }).join('');
+
   qs('#resume').innerHTML = `
     <details open>
       <summary>Tableau récapitulatif</summary>
@@ -786,12 +841,70 @@ function renderSummary(){
         </table>
       </div>
     </details>`;
-  const payloadQR = JSON.stringify(buildQrData(summaryData)); const box=qs('#qr'); box.innerHTML='';
+
+  // QR (toujours mis à jour sur l'état courant)
+  const payloadQR = JSON.stringify(buildQrData(summaryData));
+  const box=qs('#qr'); box.innerHTML='';
   try{ if(window.QRCode){ new QRCode(box,{ text:payloadQR, width:256, height:256, correctLevel:QRCode.CorrectLevel.M }); } }catch(e){}
-  qs('#exportCsv').onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`ArcAthlon_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
 }
+
+// Bouton Mode prof
+qs('#btnProfMode').onclick = ()=>{
+  if(editMode){ return; }
+  const code = prompt('Entrer le code Mode prof :');
+  if(code==='57'){
+    renderSummary(true);
+    showToast('Mode prof activé.');
+  }else if(code!=null){
+    showToast('Code invalide.');
+  }
+};
+
+// Sauvegarder les corrections
+qs('#btnSaveEdits').onclick = ()=>{
+  const tbody = qs('#resume tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const next = rows.map(tr=>{
+    const i = +tr.getAttribute('data-index');
+    const base = {...summaryData[i]};
+    const inputs = tr.querySelectorAll('.edit-input');
+    inputs.forEach(inp=>{
+      const f = inp.getAttribute('data-f');
+      let v = inp.value;
+      if(['distance','nb0','nb6','nb7','nb8','nb9','nb10'].includes(f)){
+        v = Math.max(0, Math.floor(+v||0));
+      }
+      if(f==='indice_arc'){
+        v = +(+v||0).toFixed(2);
+      }
+      base[f] = v;
+    });
+    // Recalculer indice si compteurs changés (prioritaire par rapport au champ saisi)
+    const T = (+base.nb0)+(+base.nb6)+(+base.nb7)+(+base.nb8)+(+base.nb9)+(+base.nb10);
+    if(T>0){
+      const P = 6*(+base.nb6) + 7*(+base.nb7) + 8*(+base.nb8) + 9*(+base.nb9) + 10*(+base.nb10);
+      base.indice_arc = +(((P/T)/10)*100).toFixed(2);
+    }else{
+      base.indice_arc = +(+base.indice_arc||0).toFixed(2);
+    }
+    // Normaliser sexe
+    base.sexe = (base.sexe||'').toUpperCase()==='M' ? 'M' : 'F';
+    return base;
+  });
+  summaryData = next;
+  renderSummary(false);
+  showToast('Modifications enregistrées.');
+};
+
+// Annuler l’édition
+qs('#btnCancelEdits').onclick = ()=>{ renderSummary(false); showToast('Édition annulée.'); };
+
+// Export CSV
+qs('#exportCsv').onclick=()=>{ const csv=toCSV(summaryData); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`ArcAthlon_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); };
+
+// Retour
 qs('#backToCourse').onclick=()=> show('course');
 
 /* ============ Init ============ */
